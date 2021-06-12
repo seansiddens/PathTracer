@@ -2,7 +2,7 @@
 
 #include "vec3.h"
 
-// Struct definition for a ray in 3D space. 
+// Struct definition for a ray in 3D space.
 // Defined by it's origin and direction.
 typedef struct {
     vec3 orig;

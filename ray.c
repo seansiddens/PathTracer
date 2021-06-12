@@ -2,6 +2,4 @@
 
 // Returns the point at t along the ray r
 // R(t) = orig + t * dir
-double ray_at(ray r, double t) {
-    vec3 p = v3_add(r.orig, v3_scale(r.dir, t));
-}
+double ray_at(ray r, double t) { vec3 p = v3_add(r.orig, v3_scale(r.dir, t)); }
