@@ -5,7 +5,7 @@ OBJECTS  = $(SOURCES:%.c=%.o)
 
 CC       = clang
 CFLAGS   = -Wall -Wpedantic -Werror -Wextra
-LFLAGS   = lm
+LFLAGS   = -lm
 
 .PHONY: all clean
 
