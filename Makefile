@@ -1,4 +1,4 @@
-EXECBIN  = execname
+EXECBIN  = pathtrace
 
 SOURCES  = $(wildcard *.c)
 OBJECTS  = $(SOURCES:%.c=%.o)
