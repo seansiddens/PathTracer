@@ -30,6 +30,15 @@ vec3 v3_sub(vec3 u, vec3 v) {
 // Returns the dot product between two vectors
 double v3_dot(vec3 u, vec3 v) { return u.x * v.x + u.y * v.y + u.z * v.z; }
 
+// Returns the cross product of u and v
+vec3 v3_cross(vec3 u, vec3 v) {
+    vec3 w;
+    w.x = u.y * v.z - v.y * u.z;
+    w.y = v.x * u.z - u.x * v.z;
+    w.z = u.x * v.y - v.x * u.y;
+    return w;
+}
+
 // Returns the product of the vector v and scalar a
 vec3 v3_scale(vec3 v, double a) {
     vec3 w;

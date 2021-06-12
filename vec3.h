@@ -17,6 +17,8 @@ vec3 v3_sub(vec3, vec3);
 
 double v3_dot(vec3, vec3);
 
+vec3 v3_cross(vec3, vec3);
+
 vec3 v3_scale(vec3, double);
 
 void v3_print(vec3);
