@@ -20,3 +20,6 @@ $(EXECBIN): $(OBJECTS)
 clean:
 	rm -f $(EXECBIN) $(OBJECTS)
 
+format: 
+	clang-format -i *.[ch] -style="{IndentWidth: 4}"
+
