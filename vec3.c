@@ -48,6 +48,21 @@ vec3 v3_scale(vec3 v, double a) {
     return w;
 }
 
+// Returns the unit vector of a given vector
+vec3 v3_unit_vector(vec3 v) {
+    return v3_scale(v, 1.0 / v3_length(v));
+}
+
+// Normalizes the given vector
+void v3_normalize(vec3 *v) {
+    double l = v3_length(*v);
+    v->x = v->x / l;
+    v->y = v->y / l;
+    v->z = v->z / l;
+    return;
+}
+
+
 // Prints a given vector
 void v3_print(vec3 v) {
     printf("(%f, %f, %f)\n", v.x, v.y, v.z);

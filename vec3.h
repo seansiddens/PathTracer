@@ -21,4 +21,8 @@ vec3 v3_cross(vec3, vec3);
 
 vec3 v3_scale(vec3, double);
 
+vec3 v3_unit_vector(vec3);
+
+void v3_normalize(vec3 *);
+
 void v3_print(vec3);
