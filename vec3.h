@@ -27,4 +27,6 @@ vec3 v3_unit_vector(vec3);
 
 void v3_normalize(vec3 *);
 
+vec3 v3_lerp(vec3, vec3, double);
+
 void v3_print(vec3);

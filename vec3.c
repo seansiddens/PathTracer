@@ -66,6 +66,12 @@ void v3_normalize(vec3 *v) {
     return;
 }
 
+// Linearly interpolates between two vectors given t
+// blended_value = (1 - t) * start_value + t * end_value
+vec3 v3_lerp(vec3 start, vec3 end, double t) {
+    return v3_add(v3_scale(start, 1.0 - t), v3_scale(end, t));
+}
+
 // Prints a given vector
 void v3_print(vec3 v) {
     printf("(%f, %f, %f)\n", v.x, v.y, v.z);
