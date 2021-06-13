@@ -7,6 +7,8 @@ typedef struct {
 
 typedef vec3 color; // Use same struct definition for when referring to a color
 
+vec3 v3_init(double, double, double);
+
 double v3_length_squared(vec3);
 
 double v3_length(vec3);
