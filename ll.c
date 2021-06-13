@@ -1,18 +1,7 @@
 #include "ll.h"
 
 #include <stdlib.h>
-
-//
-// Struct definition for a linked list. length is size of list, head and tail
-// are pointers to the head and sentinel nodes, and mtf is a flag for whether or
-// not the move-to-front rule is on.
-//
-struct LinkedList {
-    uint32_t length;
-    Node *head; // Head sentinel node
-    Node *tail; // Tail sentinel node
-    bool mtf;
-};
+#include <stdio.h>
 
 //
 // Constructor for a linked list. Initializes length and mtf fields and
@@ -122,3 +111,14 @@ void ll_insert(LinkedList *ll, void *object, ObjectType type) {
 /*}*/
 /*return;*/
 /*}*/
+
+void ll_print(LinkedList *ll) {
+    if (ll) {
+        Node *curr_node = ll->head->next;
+        while (curr_node != ll->tail) {
+            printf("%d\n", curr_node->type);
+            curr_node = curr_node->next;
+        }
+    }
+    return;
+}

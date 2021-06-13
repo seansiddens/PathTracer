@@ -2,6 +2,7 @@
 #include "ray.h"
 #include "sphere.h"
 #include "vec3.h"
+#include "scene.h"
 
 #include <stdbool.h>
 #include <stdint.h>
