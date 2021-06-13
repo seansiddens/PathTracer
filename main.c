@@ -9,23 +9,33 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "include/stb_image/stb_image_write.h"
 
-bool hit_sphere(vec3 center, double radius, ray r) {
+double hit_sphere(vec3 center, double radius, ray r) {
     vec3 oc = v3_sub(r.orig, center);
     double a = v3_dot(r.dir, r.dir);
     double b = 2.0 * v3_dot(oc, r.dir);
     double c = v3_dot(oc, oc) - (radius * radius);
     double discriminant = b * b - 4 * a * c;
-    return (discriminant > 0);
+    if (discriminant < 0) {
+        return -1.0;
+    } else {
+        return (-b - sqrt(discriminant)) / (2.0 * a);
+    }
 
 }
 
 // Returns a background color given a ray
 color ray_color(ray r) {
-    if (hit_sphere(v3_init(0, 0, -1), 0.5, r)) {
-        return v3_init(1, 0, 0);
+    // Check if ray hit sphere
+    double t = hit_sphere(v3_init(0, 0, -1), 0.5, r);
+    if (t > 0.0) {
+        // Get surface normal of hit
+        vec3 N = v3_unit_vector(v3_sub(ray_at(r, t), v3_init(0, 0, -1)));
+        return v3_scale(v3_init(N.x + 1, N.y + 1, N.z + 1), 0.5);
     }
+
+    // If not, return background color
     vec3 unit_direction = v3_unit_vector(r.dir);
-    double t = 0.5 * (unit_direction.y + 1.0);
+    t = 0.5 * (unit_direction.y + 1.0);
     color start_color = v3_init(1.0, 1.0, 1.0);
     color end_color = v3_init(0.5, 0.7, 1.0);
     return v3_lerp(start_color, end_color, t);
