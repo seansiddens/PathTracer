@@ -3,15 +3,15 @@
 #include <math.h>
 
 // Init function for a sphere
-sphere sphere_init(vec3 center, double radius) {
-    sphere s = {center, radius};
+Sphere sphere_init(vec3 center, double radius) {
+    Sphere s = {center, radius};
     return s;
 }
 
 // Ray-sphere intersection function. Returns true if a hit occurred and false
 // otherwise. If a hit occurs, the hit information is kept track of within
 // the hit_rec pointer.
-bool hit_sphere(sphere s, ray r, double t_min, double t_max, hit_rec *rec) {
+bool hit_sphere(Sphere s, ray r, double t_min, double t_max, HitRecord *rec) {
     // Solve quadratic
     vec3 oc = v3_sub(r.orig, s.center);
     double a = v3_length_squared(r.dir);

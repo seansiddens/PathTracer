@@ -9,8 +9,8 @@
 typedef struct {
     vec3 center;
     double radius;
-} sphere;
+} Sphere;
 
-sphere sphere_init(vec3, double);
+Sphere sphere_init(vec3, double);
 
-bool sphere_hit(sphere, ray, double, double, hit_rec *);
+bool sphere_hit(Sphere, ray, double, double, HitRecord *);
