@@ -1,6 +1,6 @@
 #pragma once
 
-#include "hittable.h"
+#include "hit.h"
 #include "ray.h"
 #include "vec3.h"
 #include <stdbool.h>
@@ -13,4 +13,4 @@ typedef struct {
 
 Sphere sphere_init(vec3, double);
 
-bool sphere_hit(Sphere, ray, double, double, HitRecord *);
+bool sphere_intersect(Sphere, ray, double, double, HitRecord *);

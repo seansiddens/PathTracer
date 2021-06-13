@@ -11,7 +11,8 @@ Sphere sphere_init(vec3 center, double radius) {
 // Ray-sphere intersection function. Returns true if a hit occurred and false
 // otherwise. If a hit occurs, the hit information is kept track of within
 // the hit_rec pointer.
-bool hit_sphere(Sphere s, ray r, double t_min, double t_max, HitRecord *rec) {
+bool sphere_intersect(Sphere s, ray r, double t_min, double t_max,
+                      HitRecord *rec) {
     // Solve quadratic
     vec3 oc = v3_sub(r.orig, s.center);
     double a = v3_length_squared(r.dir);

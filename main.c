@@ -1,41 +1,29 @@
+#include "hit.h"
 #include "ray.h"
+#include "sphere.h"
 #include "vec3.h"
 
+#include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "include/stb_image/stb_image_write.h"
 
-double hit_sphere(vec3 center, double radius, ray r) {
-    vec3 oc = v3_sub(r.orig, center);
-    double a = v3_length_squared(r.dir);
-    double half_b = v3_dot(oc, r.dir);
-    double c = v3_length_squared(oc) - radius * radius;
-    double discriminant = half_b * half_b - a * c;
-    if (discriminant < 0) {
-        return -1.0;
-    } else {
-        return (-half_b - sqrt(discriminant)) / a;
-    }
-
-}
-
 // Returns a background color given a ray
 color ray_color(ray r) {
+    HitRecord rec;
+    Sphere s = sphere_init(v3_init(0, 0, -1), 0.5);
     // Check if ray hit sphere
-    double t = hit_sphere(v3_init(0, 0, -1), 0.5, r);
-    if (t > 0.0) {
-        // Get surface normal of hit
-        vec3 N = v3_unit_vector(v3_sub(ray_at(r, t), v3_init(0, 0, -1)));
+    if (sphere_intersect(s, r, 0, INFINITY, &rec)) {
+        vec3 N = rec.normal;
         return v3_scale(v3_init(N.x + 1, N.y + 1, N.z + 1), 0.5);
     }
 
     // If not, return background color
     vec3 unit_direction = v3_unit_vector(r.dir);
-    t = 0.5 * (unit_direction.y + 1.0);
+    double t = 0.5 * (unit_direction.y + 1.0);
     color start_color = v3_init(1.0, 1.0, 1.0);
     color end_color = v3_init(0.5, 0.7, 1.0);
     return v3_lerp(start_color, end_color, t);
