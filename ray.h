@@ -9,4 +9,4 @@ typedef struct {
     vec3 dir;
 } ray;
 
-double ray_at(ray, double);
+vec3 ray_at(ray, double);
