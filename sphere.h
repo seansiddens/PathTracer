@@ -11,6 +11,6 @@ typedef struct {
     double radius;
 } Sphere;
 
-Sphere sphere_init(vec3, double);
+Sphere *sphere_create(vec3, double);
 
 bool sphere_intersect(Sphere, ray, double, double, HitRecord *);

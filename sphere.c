@@ -1,10 +1,15 @@
 #include "sphere.h"
 
 #include <math.h>
+#include <stdlib.h>
 
-// Init function for a sphere
-Sphere sphere_init(vec3 center, double radius) {
-    Sphere s = {center, radius};
+// Constructor for a sphere
+Sphere *sphere_create(vec3 center, double radius) {
+    Sphere *s = (Sphere *)malloc(sizeof(Sphere));
+    if (s) {
+        s->center = center;
+        s->radius = radius;
+    }
     return s;
 }
 
