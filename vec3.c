@@ -15,7 +15,6 @@ double v3_length_squared(vec3 v) { return v.x * v.x + v.y * v.y + v.z * v.z; }
 // Returns the length of a given vector
 double v3_length(vec3 v) { return sqrt(v3_length_squared(v)); }
 
-
 // Returns the sum of two vectors
 vec3 v3_add(vec3 u, vec3 v) {
     vec3 w;
