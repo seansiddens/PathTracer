@@ -1,5 +1,6 @@
 #pragma once
 
+#include "material.h"
 #include "ray.h"
 #include "vec3.h"
 
@@ -14,6 +15,7 @@
 typedef struct {
     vec3 p;
     vec3 normal;
+    Material *material;
     double t;
     bool front_face;
 } HitRecord;
