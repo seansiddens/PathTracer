@@ -172,7 +172,7 @@ bool v3_near_zero(vec3 v) {
     return (fabs(v.x) < e) && (fabs(v.y) < e) && (fabs(v.z) < e);
 }
 
-// 
+//
 // Reflects a given vector about a normal.
 //
 // w = v - 2 * dot(v, n) * n

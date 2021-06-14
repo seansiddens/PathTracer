@@ -42,8 +42,8 @@ Material *create_lambertian(color albedo) {
 }
 
 //
-// Returns a pointer to a newly created metal material. 
-// Metal reflects incoming rays and has a surface albedo. 
+// Returns a pointer to a newly created metal material.
+// Metal reflects incoming rays and has a surface albedo.
 //
 Material *create_metal(color albed) {
     Material *mat = (Material *)malloc(sizeof(Material));
