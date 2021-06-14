@@ -1,19 +1,16 @@
 #pragma once
 
+#include "hit.h"
+#include "ray.h"
 #include "vec3.h"
 
-enum MaterialType { LAMBERTIAN, METAL };
-typedef enum MaterialType MaterialType;
+#include <stdbool.h>
 
-typedef struct {
-    MaterialType type;
-    void *material;
-} Material;
-
-typedef struct {
-    color albedo;
-} Lambertian;
+typedef struct Material Material;
 
 Material *create_lambertian(color albedo);
 
 void mat_delete(Material **mat);
+
+bool scatter(Material *mat, ray ray_in, HitRecord *rec, color *attenuation,
+             ray *ray_scattered);
