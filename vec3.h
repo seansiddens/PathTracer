@@ -1,5 +1,7 @@
 #pragma once
 
+#include <stdbool.h>
+
 // Struct definition for a 3 dimensional vector.
 typedef struct {
     double x, y, z;
@@ -38,5 +40,7 @@ vec3 random_in_unit_sphere();
 vec3 random_unit_vector();
 
 vec3 random_in_hemisphere(vec3 normal);
+
+bool v3_near_zero(vec3 v);
 
 void v3_print(vec3);
