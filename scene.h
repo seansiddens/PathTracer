@@ -18,6 +18,7 @@ void scene_delete(Scene **);
 void scene_add_sphere(Scene *, double x, double y, double z, double r,
                       Material *material);
 
-bool scene_intersect(Scene *, ray r, double t_min, double t_max, HitRecord * rec);
+bool scene_intersect(Scene *, ray r, double t_min, double t_max,
+                     HitRecord *rec);
 
 void scene_print(Scene *);
