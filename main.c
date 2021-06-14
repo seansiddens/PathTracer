@@ -1,3 +1,4 @@
+#include "camera.h"
 #include "hit.h"
 #include "ray.h"
 #include "scene.h"
@@ -39,23 +40,12 @@ int main(void) {
         (uint8_t *)calloc(image_width * image_height * 3, sizeof(uint8_t));
 
     // Camera settings
-    double viewport_height = 2.0;
-    double viewport_width = viewport_height * aspect_ratio;
-    double focal_length = 1.0;
-
-    vec3 origin = {0, 0, 0};
-    vec3 horizontal = {viewport_width, 0, 0};
-    vec3 vertical = {0, viewport_height, 0};
-    vec3 focal = {0, 0, focal_length};
-    vec3 lower_left_corner =
-        v3_sub(v3_sub(v3_sub(origin, focal), v3_scale(horizontal, 0.5)),
-               v3_scale(vertical, 0.5));
+    Camera *cam = cam_create(v3_init(0, 0, 0), aspect_ratio, 1.0);
 
     // Scene settings
     Scene *scene = scene_create();
     scene_add_sphere(scene, 0, 0, -1, 0.5);
     scene_add_sphere(scene, 0, -100.5, -1, 100);
-    scene_print(scene);
 
     // Iterate over each pixel in the image
     for (uint32_t y = 0; y < image_height; y++) {
@@ -70,17 +60,11 @@ int main(void) {
             // Map image coordinates to normalized (u, v) coordinates
             double u = x / (double)(image_width - 1);
             double v = 1.0 - (y / (double)(image_height - 1));
-
-            // Get direction from camera origin to point on viewport
-            vec3 dir =
-                v3_add(v3_add(lower_left_corner, v3_scale(horizontal, u)),
-                       v3_scale(vertical, v));
-
-            // View ray
-            ray r = {origin, dir};
+        
+            ray view_ray = get_view_ray(cam, u, v);
 
             // Get color of what ray is looking at
-            color col = ray_color(r, scene);
+            color col = ray_color(view_ray, scene);
 
             // Set value of color channels at the pixel
             image[i] = (uint8_t)(255 * col.x);
@@ -101,6 +85,7 @@ int main(void) {
     // Free allocated memory
     free(image);
     scene_delete(&scene);
+    cam_delete(&cam);
 
     return 0;
 }
