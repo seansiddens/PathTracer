@@ -45,7 +45,7 @@ Material *create_lambertian(color albedo) {
 // Returns a pointer to a newly created metal material.
 // Metal reflects incoming rays and has a surface albedo.
 //
-Material *create_metal(color albed) {
+Material *create_metal(color albedo) {
     Material *mat = (Material *)malloc(sizeof(Material));
     assert(mat != NULL);
 
@@ -55,6 +55,7 @@ Material *create_metal(color albed) {
     // Initialize the material w/ supplied albedo
     Metal *metal = (Metal *)malloc(sizeof(Metal));
     assert(metal != NULL);
+    metal->albedo = albedo;
 
     mat->material = metal;
 
@@ -85,6 +86,7 @@ void mat_delete(Material **mat) {
 bool scatter(Material *mat, ray ray_in, HitRecord *rec, color *attenuation,
              ray *ray_scattered) {
     if (mat->type == LAMBERTIAN) {
+        // Lambertian scattering.
         vec3 scatter_direction = v3_add(rec->normal, random_unit_vector());
 
         // Catch degenerate scatter direction - if the random unit vector
@@ -94,13 +96,27 @@ bool scatter(Material *mat, ray ray_in, HitRecord *rec, color *attenuation,
         if (v3_near_zero(scatter_direction)) {
             scatter_direction = rec->normal;
         }
+
+        // Initialize scattered ray.
         ray_scattered->orig = rec->p;
         ray_scattered->dir = scatter_direction;
+
+        // Reflected light is attenuated by the surface color.
         *attenuation = ((Lambertian *)(mat->material))->albedo;
         return true;
     } else if (mat->type == METAL) {
-        v3_print(ray_in.orig);
-        return false;
+        // Reflect incoming ray.
+        vec3 reflected = v3_reflect(v3_unit_vector(ray_in.dir), rec->normal);
+
+        // Initialize scattered ray.
+        ray_scattered->orig = rec->p;
+        ray_scattered->dir = reflected;
+
+        // Reflected light is attenuated by the surface color.
+        *attenuation = ((Metal *)(mat->material))->albedo;
+
+        // Return true if reflected ray is in same hemisphere as normal
+        return (v3_dot(ray_scattered->dir, rec->normal) > 0);
     } else {
         fprintf(stderr,
                 "ERROR: Unknown material type encountered in scatter()!\n");
