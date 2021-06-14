@@ -143,8 +143,6 @@ vec3 random_in_unit_sphere() {
 //
 vec3 random_unit_vector() { return v3_unit_vector(random_in_unit_sphere()); }
 
-
-
 //
 // Returns a random point a hemisphere surrounding a given normal
 //
