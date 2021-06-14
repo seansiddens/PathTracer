@@ -4,11 +4,12 @@
 #include <stdlib.h>
 
 // Constructor for a sphere
-Sphere *sphere_create(vec3 center, double radius) {
+Sphere *sphere_create(vec3 center, double radius, Material *material) {
     Sphere *s = (Sphere *)malloc(sizeof(Sphere));
     if (s) {
         s->center = center;
         s->radius = radius;
+        s->material = material;
     }
     return s;
 }

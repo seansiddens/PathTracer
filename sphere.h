@@ -1,17 +1,20 @@
 #pragma once
 
 #include "hit.h"
+#include "material.h"
 #include "ray.h"
 #include "vec3.h"
+
 #include <stdbool.h>
 
 // Struct definition for a hittable sphere object
 typedef struct {
     vec3 center;
     double radius;
+    Material *material;
 } Sphere;
 
-Sphere *sphere_create(vec3, double);
+Sphere *sphere_create(vec3, double, Material *);
 
 void sphere_delete(Sphere **);
 
