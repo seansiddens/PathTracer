@@ -1,8 +1,8 @@
 #include "hit.h"
 #include "ray.h"
+#include "scene.h"
 #include "sphere.h"
 #include "vec3.h"
-#include "scene.h"
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -13,11 +13,10 @@
 #include "include/stb_image/stb_image_write.h"
 
 // Returns a background color given a ray
-color ray_color(ray r) {
+color ray_color(ray r, Scene *scene) {
     HitRecord rec;
-    Sphere s = sphere_init(v3_init(0, 0, -1), 0.5);
-    // Check if ray hit sphere
-    if (sphere_intersect(s, r, 0, INFINITY, &rec)) {
+    // Check if ray hits an object in our scene
+    if (scene_intersect(scene, r, 0, INFINITY, &rec)) {
         vec3 N = rec.normal;
         return v3_scale(v3_init(N.x + 1, N.y + 1, N.z + 1), 0.5);
     }
@@ -52,6 +51,12 @@ int main(void) {
         v3_sub(v3_sub(v3_sub(origin, focal), v3_scale(horizontal, 0.5)),
                v3_scale(vertical, 0.5));
 
+    // Scene settings
+    Scene *scene = scene_create();
+    scene_add_sphere(scene, 0, 0, -1, 0.5);
+    scene_add_sphere(scene, 0, -100.5, -1, 100);
+    scene_print(scene);
+
     // Iterate over each pixel in the image
     for (uint32_t y = 0; y < image_height; y++) {
         // Print progress
@@ -75,7 +80,7 @@ int main(void) {
             ray r = {origin, dir};
 
             // Get color of what ray is looking at
-            color col = ray_color(r);
+            color col = ray_color(r, scene);
 
             // Set value of color channels at the pixel
             image[i] = (uint8_t)(255 * col.x);
@@ -92,6 +97,10 @@ int main(void) {
         fprintf(stderr, "Failed to write image out to file\n");
         exit(1);
     }
+
+    // Free allocated memory
+    free(image);
+    scene_delete(&scene);
 
     return 0;
 }

@@ -13,6 +13,14 @@ Sphere *sphere_create(vec3 center, double radius) {
     return s;
 }
 
+void sphere_delete(Sphere **s) {
+    if (*s) {
+        free(*s);
+        *s = NULL;
+    }
+    return;
+}
+
 // Ray-sphere intersection function. Returns true if a hit occurred and false
 // otherwise. If a hit occurs, the hit information is kept track of within
 // the hit_rec pointer.

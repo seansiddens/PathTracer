@@ -13,4 +13,6 @@ typedef struct {
 
 Sphere *sphere_create(vec3, double);
 
+void sphere_delete(Sphere **);
+
 bool sphere_intersect(Sphere, ray, double, double, HitRecord *);
