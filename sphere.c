@@ -56,6 +56,7 @@ bool sphere_intersect(Sphere s, ray r, double t_min, double t_max,
     rec->p = ray_at(r, rec->t);
     vec3 outward_normal = v3_scale(v3_sub(rec->p, s.center), 1.0 / s.radius);
     set_face_normal(rec, r, outward_normal);
+    rec->material = s.material;
 
     return true;
 }
