@@ -1,4 +1,5 @@
 #include "node.h"
+#include "sphere.h"
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -24,7 +25,10 @@ Node *node_create(void *object, ObjectType type) {
 //
 void node_delete(Node **n) {
     if (*n) {
-        // Free node
+        if ((*n)->type == SPHERE) {
+            Sphere *s = (Sphere *)(*n)->object;
+            sphere_delete(&s);
+        }
         free(*n);
         *n = NULL;
     }

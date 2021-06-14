@@ -1,7 +1,8 @@
 #include "ll.h"
+#include "sphere.h"
 
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 //
 // Constructor for a linked list. Initializes length and mtf fields and
@@ -98,25 +99,15 @@ void ll_insert(LinkedList *ll, void *object, ObjectType type) {
     return;
 }
 
-//
-// Prints out every node in the linked list except for the sentinel nodes
-//
-/*void ll_print(LinkedList *ll) {*/
-/*if (ll) {*/
-/*Node *curr_node = ll->head->next;*/
-/*while (curr_node != ll->tail) {*/
-/*node_print(curr_node);*/
-/*curr_node = curr_node->next;*/
-/*}*/
-/*}*/
-/*return;*/
-/*}*/
-
 void ll_print(LinkedList *ll) {
     if (ll) {
         Node *curr_node = ll->head->next;
         while (curr_node != ll->tail) {
-            printf("%d\n", curr_node->type);
+            if (curr_node->type == SPHERE) {
+                Sphere *s = curr_node->object;
+                printf("Sphere: (%f, %f, %f), r = %f\n", s->center.x, s->center.y, s->center.z, s->radius);
+            }
+
             curr_node = curr_node->next;
         }
     }
