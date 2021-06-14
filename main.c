@@ -15,13 +15,25 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "include/stb_image/stb_image_write.h"
 
-// Returns a background color given a ray
-color ray_color(ray r, Scene *scene) {
+//
+// Returns the color a given ray is pointing at
+//
+color ray_color(ray r, Scene *scene, uint32_t depth) {
     HitRecord rec;
+
+    // If we've exceeded the ray bounce limit, no more light is gathered.
+    if (depth == 0) {
+        color col = {0, 0, 0};
+        return col;
+    }
+
     // Check if ray hits an object in our scene
     if (scene_intersect(scene, r, 0, INFINITY, &rec)) {
-        vec3 N = rec.normal;
-        return v3_scale(v3_init(N.x + 1, N.y + 1, N.z + 1), 0.5);
+        vec3 target = v3_add(v3_add(rec.p, rec.normal), random_in_unit_sphere());
+        ray child_ray = {rec.p, v3_sub(target, rec.p)};
+        
+        // Spawn child ray, and attenuate by 50%
+        return v3_scale(ray_color(child_ray, scene, depth - 1), 0.5);
     }
 
     // If not, return background color
@@ -41,6 +53,7 @@ int main(void) {
     uint8_t *image =
         (uint8_t *)calloc(image_width * image_height * 3, sizeof(uint8_t));
     uint32_t samples_per_pixel = 100;
+    uint32_t max_depth = 50;
 
     // Camera settings
     Camera *cam = cam_create(v3_init(0, 0, 0), aspect_ratio, 1.0);
@@ -73,7 +86,7 @@ int main(void) {
                 ray view_ray = get_view_ray(cam, u, v);
 
                 // Accumulate color of what ray is looking at
-                pixel_color = v3_add(pixel_color, ray_color(view_ray, scene));
+                pixel_color = v3_add(pixel_color, ray_color(view_ray, scene, max_depth));
             }
             // Write color to final image
             write_color(image, pixel_color, i, samples_per_pixel);
