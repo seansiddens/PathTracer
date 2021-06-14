@@ -133,14 +133,15 @@ vec3 random_in_unit_sphere() {
 
 //
 // Returns a random unit vector.
-// 
-// True Lambertian reflectance still has higher probability near the normal, but the
-// distribution is more uniform. This can be achieved by picking random points
-// ON the unit sphere, which is done by normalizing the vector WITHIN the unit sphere
 //
-vec3 random_unit_vector() {
-    return v3_unit_vector(random_in_unit_sphere());
-}
+// True Lambertian reflectance still has higher probability near the normal, but
+// the distribution is more uniform. This can be achieved by picking random
+// points ON the unit sphere, which is done by normalizing the vector WITHIN the
+// unit sphere. Diffuse objects will appear lighter due to more light bouncing
+// towards the camera. Shadows will also appear less pronounced due to less
+// light bouncing directly up from objects directly underneath other objects.
+//
+vec3 random_unit_vector() { return v3_unit_vector(random_in_unit_sphere()); }
 
 //
 // Prints a given vector.

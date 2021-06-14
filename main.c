@@ -28,9 +28,8 @@ color ray_color(ray r, Scene *scene, uint32_t depth) {
     }
 
     // Check if ray hits an object in our scene
-    if (scene_intersect(scene, r, 0, INFINITY, &rec)) {
-        vec3 target =
-            v3_add(v3_add(rec.p, rec.normal), random_in_unit_sphere());
+    if (scene_intersect(scene, r, 0.001, INFINITY, &rec)) {
+        vec3 target = v3_add(v3_add(rec.p, rec.normal), random_unit_vector());
         ray child_ray = {rec.p, v3_sub(target, rec.p)};
 
         // Spawn child ray, and attenuate by 50%
