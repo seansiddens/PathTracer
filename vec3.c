@@ -164,10 +164,21 @@ vec3 random_in_hemisphere(vec3 normal) {
     }
 }
 
+//
 // Returns true if the vector is close to zero in all dimensions.
+//
 bool v3_near_zero(vec3 v) {
     const double e = 1e-8;
     return (fabs(v.x) < e) && (fabs(v.y) < e) && (fabs(v.z) < e);
+}
+
+// 
+// Reflects a given vector about a normal.
+//
+// w = v - 2 * dot(v, n) * n
+//
+vec3 v3_reflect(vec3 v, vec3 n) {
+    return v3_sub(v, v3_scale(n, 2 * v3_dot(v, n)));
 }
 
 //

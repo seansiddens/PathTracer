@@ -45,4 +45,6 @@ vec3 random_in_hemisphere(vec3 normal);
 
 bool v3_near_zero(vec3 v);
 
+vec3 v3_reflect(vec3 v, vec3 n);
+
 void v3_print(vec3);
