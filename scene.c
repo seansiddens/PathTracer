@@ -25,8 +25,9 @@ void scene_delete(Scene **scene) {
 }
 
 // Adds a sphere to the scene
-void scene_add_sphere(Scene *scene, double x, double y, double z, double r) {
-    Sphere *s = sphere_create(v3_init(x, y, z), r);
+void scene_add_sphere(Scene *scene, double x, double y, double z, double r,
+                      Material *material) {
+    Sphere *s = sphere_create(v3_init(x, y, z), r, material);
     ll_insert(scene->objects, s, SPHERE);
 }
 

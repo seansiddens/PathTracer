@@ -2,6 +2,7 @@
 
 #include "hit.h"
 #include "ll.h"
+#include "material.h"
 #include "ray.h"
 
 typedef LinkedList HittableList;
@@ -14,7 +15,8 @@ Scene *scene_create(void);
 
 void scene_delete(Scene **);
 
-void scene_add_sphere(Scene *, double, double, double, double);
+void scene_add_sphere(Scene *, double, double, double, double,
+                      Material *material);
 
 bool scene_intersect(Scene *, ray, double, double, HitRecord *);
 
