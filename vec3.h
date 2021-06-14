@@ -23,6 +23,8 @@ double v3_dot(vec3, vec3);
 
 vec3 v3_cross(vec3, vec3);
 
+vec3 v3_hadamard(vec3 u, vec3 v);
+
 vec3 v3_scale(vec3, double);
 
 vec3 v3_unit_vector(vec3);
