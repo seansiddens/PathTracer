@@ -159,7 +159,7 @@ vec3 random_in_hemisphere(vec3 normal) {
 }
 
 // Returns true if the vector is close to zero in all dimensions.
-bool near_zero(vec3 v) {
+bool v3_near_zero(vec3 v) {
     const double e = 1e-8;
     return (fabs(v.x) < e) && (fabs(v.y) < e) && (fabs(v.z) < e);
 }
