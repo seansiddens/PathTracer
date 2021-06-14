@@ -29,4 +29,8 @@ void v3_normalize(vec3 *);
 
 vec3 v3_lerp(vec3, vec3, double);
 
+vec3 v3_random_uniform();
+
+vec3 v3_random_range(double min, double max);
+
 void v3_print(vec3);
