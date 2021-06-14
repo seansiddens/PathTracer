@@ -60,7 +60,7 @@ int main(void) {
             // Map image coordinates to normalized (u, v) coordinates
             double u = x / (double)(image_width - 1);
             double v = 1.0 - (y / (double)(image_height - 1));
-        
+
             ray view_ray = get_view_ray(cam, u, v);
 
             // Get color of what ray is looking at
