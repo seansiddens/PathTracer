@@ -37,4 +37,6 @@ vec3 random_in_unit_sphere();
 
 vec3 random_unit_vector();
 
+vec3 random_in_hemisphere(vec3 normal);
+
 void v3_print(vec3);
