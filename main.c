@@ -29,9 +29,10 @@ color ray_color(ray r, Scene *scene, uint32_t depth) {
 
     // Check if ray hits an object in our scene
     if (scene_intersect(scene, r, 0, INFINITY, &rec)) {
-        vec3 target = v3_add(v3_add(rec.p, rec.normal), random_in_unit_sphere());
+        vec3 target =
+            v3_add(v3_add(rec.p, rec.normal), random_in_unit_sphere());
         ray child_ray = {rec.p, v3_sub(target, rec.p)};
-        
+
         // Spawn child ray, and attenuate by 50%
         return v3_scale(ray_color(child_ray, scene, depth - 1), 0.5);
     }
@@ -86,7 +87,8 @@ int main(void) {
                 ray view_ray = get_view_ray(cam, u, v);
 
                 // Accumulate color of what ray is looking at
-                pixel_color = v3_add(pixel_color, ray_color(view_ray, scene, max_depth));
+                pixel_color =
+                    v3_add(pixel_color, ray_color(view_ray, scene, max_depth));
             }
             // Write color to final image
             write_color(image, pixel_color, i, samples_per_pixel);
