@@ -1,6 +1,7 @@
 #include "camera.h"
 #include "color.h"
 #include "hit.h"
+#include "material.h"
 #include "ray.h"
 #include "scene.h"
 #include "sphere.h"
@@ -15,6 +16,9 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "include/stb_image/stb_image_write.h"
 
+// TODO: Every time an object is added to the scene, keep track of it's material
+// using a LL, then when scene_delete() is called, free that memory.
+
 //
 // Returns the color a given ray is pointing at
 //
@@ -23,23 +27,18 @@ color ray_color(ray r, Scene *scene, uint32_t depth) {
 
     // If we've exceeded the ray bounce limit, no more light is gathered.
     if (depth == 0) {
-        color col = {0, 0, 0};
-        return col;
+        return v3_init(0, 0, 0);
     }
 
     // Check if ray hits an object in our scene
     if (scene_intersect(scene, r, 0.001, INFINITY, &rec)) {
-        // Hemispherical
-        vec3 target = v3_add(rec.p, random_in_hemisphere(rec.normal));
-
-        // Lambertian
-        /*vec3 target = v3_add(v3_add(rec.p, rec.normal),
-         * random_unit_vector());*/
-
-        ray child_ray = {rec.p, v3_sub(target, rec.p)};
-
-        // Spawn child ray, and attenuate by 50%
-        return v3_scale(ray_color(child_ray, scene, depth - 1), 0.5);
+        ray scattered;
+        color attenuation;
+        if (scatter(rec.material, r, &rec, &attenuation, &scattered)) {
+            return v3_hadamard(attenuation,
+                               ray_color(scattered, scene, depth - 1));
+        }
+        return v3_init(0, 0, 0);
     }
 
     // If not, return background color
@@ -65,9 +64,12 @@ int main(void) {
     Camera *cam = cam_create(v3_init(0, 0, 0), aspect_ratio, 1.0);
 
     // Scene settings
+    Material *mat_ground = create_lambertian(v3_init(0.8, 0.8, 0.0));
+    Material *mat1 = create_lambertian(v3_init(0.7, 0.3, 0.3));
+
     Scene *scene = scene_create();
-    scene_add_sphere(scene, 0, 0, -1, 0.5);
-    scene_add_sphere(scene, 0, -100.5, -1, 100);
+    scene_add_sphere(scene, 0, 0, -1, 0.5, mat1);
+    scene_add_sphere(scene, 0, -100.5, -1, 100, mat_ground);
 
     // Iterate over each pixel in the image
     for (uint32_t y = 0; y < image_height; y++) {
@@ -113,6 +115,7 @@ int main(void) {
     free(image);
     scene_delete(&scene);
     cam_delete(&cam);
+    mat_delete(&mat1);
 
     return 0;
 }
