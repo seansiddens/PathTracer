@@ -62,6 +62,15 @@ bool scatter(Material *mat, ray ray_in, HitRecord *rec, color *attenuation,
              ray *ray_scattered) {
     if (mat->type == LAMBERTIAN) {
         vec3 scatter_direction = v3_add(rec->normal, random_unit_vector());
+
+        // Catch degenerate scatter direction - if the random unit vector
+        // generated is exactly opposite to the surface normal, then they will
+        // sum to zero, resulting in a zero scatter direction vector. This will
+        // lead to issues later on.
+        if (v3_near_zero(scatter_direction)) {
+            scatter_direction = rec->normal;
+        }
+
         ray_scattered->orig = rec->p;
         ray_scattered->dir = scatter_direction;
         *attenuation = ((Lambertian *)(mat->material))->albedo;
