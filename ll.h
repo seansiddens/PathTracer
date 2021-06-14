@@ -24,10 +24,6 @@ LinkedList *ll_create(bool mtf);
 
 void ll_delete(LinkedList **ll);
 
-uint32_t ll_length(LinkedList *ll);
-
-Node *ll_lookup(LinkedList *ll, char *oldspeak);
-
 void ll_insert(LinkedList *ll, void *, ObjectType);
 
 void ll_print(LinkedList *ll);
