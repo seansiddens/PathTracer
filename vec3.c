@@ -60,7 +60,7 @@ vec3 v3_cross(vec3 u, vec3 v) {
     return w;
 }
 
-// 
+//
 // Returns the Hadamard (entrywise) product of two vectors.
 vec3 v3_hadamard(vec3 u, vec3 v) {
     return v3_init(u.x * v.x, u.y * v.y, u.z * v.z);
