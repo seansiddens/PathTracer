@@ -33,4 +33,8 @@ vec3 v3_random_uniform();
 
 vec3 v3_random_range(double min, double max);
 
+vec3 random_in_unit_sphere();
+
+vec3 random_unit_vector();
+
 void v3_print(vec3);

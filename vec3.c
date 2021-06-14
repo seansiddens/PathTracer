@@ -127,7 +127,19 @@ vec3 random_in_unit_sphere() {
         if (v3_length_squared(p) >= 1.0) {
             continue;
         }
+        return p;
     }
+}
+
+//
+// Returns a random unit vector.
+// 
+// True Lambertian reflectance still has higher probability near the normal, but the
+// distribution is more uniform. This can be achieved by picking random points
+// ON the unit sphere, which is done by normalizing the vector WITHIN the unit sphere
+//
+vec3 random_unit_vector() {
+    return v3_unit_vector(random_in_unit_sphere());
 }
 
 //
