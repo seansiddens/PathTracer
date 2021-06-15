@@ -35,8 +35,7 @@ color ray_color(ray r, Scene *scene, uint32_t depth) {
         ray scattered;
         color attenuation;
         if (scatter(rec.material, r, &rec, &attenuation, &scattered)) {
-            return v3_hadamard(attenuation,
-                               ray_color(scattered, scene, depth - 1));
+            return v3_hadamard(attenuation, ray_color(scattered, scene, depth - 1));
         }
         return v3_init(0, 0, 0);
     }
@@ -55,21 +54,24 @@ int main(void) {
     const uint32_t image_width = 400;
     const uint32_t image_height = (uint32_t)(image_width / aspect_ratio);
     // Buffer for storing image data
-    uint8_t *image =
-        (uint8_t *)calloc(image_width * image_height * 3, sizeof(uint8_t));
+    uint8_t *image = (uint8_t *)calloc(image_width * image_height * 3, sizeof(uint8_t));
     uint32_t samples_per_pixel = 100;
     uint32_t max_depth = 50;
 
     // Camera settings
-    Camera *cam = cam_create(v3_init(0, 0, 0), aspect_ratio, 1.0);
+    Camera *cam = cam_create(v3_init(0, 0, 0), aspect_ratio, 85.0);
 
     // Scene settings
     Material *mat_ground = create_lambertian(v3_init(0.8, 0.8, 0.0));
-    Material *mat1 = create_lambertian(v3_init(0.7, 0.3, 0.3));
+    Material *mat_center = create_lambertian(v3_init(0.7, 0.3, 0.3));
+    Material *mat_left = create_dielectric(1.5);
+    Material *mat_right = create_metal(v3_init(0.8, 0.6, 0.2), 0.1);
 
     Scene *scene = scene_create();
-    scene_add_sphere(scene, 0, 0, -1, 0.5, mat1);
+    scene_add_sphere(scene, 0, 0, -1, 0.5, mat_center);
     scene_add_sphere(scene, 0, -100.5, -1, 100, mat_ground);
+    scene_add_sphere(scene, -1.0, 0.0, -1.0, 0.5, mat_left);
+    scene_add_sphere(scene, 1.0, 0.0, -1.0, 0.5, mat_right);
 
     // Iterate over each pixel in the image
     for (uint32_t y = 0; y < image_height; y++) {
@@ -87,15 +89,13 @@ int main(void) {
                 // Map image coordinates to normalized (u, v) coordinates,
                 // offset by random amount for antialiasing
                 double u = (double)(x + random_uniform()) / (image_width - 1);
-                double v =
-                    1.0 - ((double)(y + random_uniform()) / (image_height - 1));
+                double v = 1.0 - ((double)(y + random_uniform()) / (image_height - 1));
 
                 // Get view ray from camera to viewport
                 ray view_ray = get_view_ray(cam, u, v);
 
                 // Accumulate color of what ray is looking at
-                pixel_color =
-                    v3_add(pixel_color, ray_color(view_ray, scene, max_depth));
+                pixel_color = v3_add(pixel_color, ray_color(view_ray, scene, max_depth));
             }
             // Write color to final image
             write_color(image, pixel_color, i, samples_per_pixel);
@@ -115,7 +115,6 @@ int main(void) {
     free(image);
     scene_delete(&scene);
     cam_delete(&cam);
-    mat_delete(&mat1);
 
     return 0;
 }

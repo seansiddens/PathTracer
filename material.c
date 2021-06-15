@@ -150,8 +150,8 @@ bool scatter(Material *mat, ray ray_in, HitRecord *rec, color *attenuation,
         // Initialize scattered ray - direction is offset by fuzz factor
         ray_scattered->orig = rec->p;
         ray_scattered->dir =
-            v3_add(reflected, v3_scale(random_in_unit_sphere(),
-                                       ((Metal *)(mat->material))->fuzz));
+            v3_add(reflected,
+                   v3_scale(random_in_unit_sphere(), ((Metal *)(mat->material))->fuzz));
 
         // Reflected light is attenuated by the surface color.
         *attenuation = ((Metal *)(mat->material))->albedo;
@@ -166,8 +166,7 @@ bool scatter(Material *mat, ray ray_in, HitRecord *rec, color *attenuation,
         double refraction_ratio = rec->front_face ? (1.0 / ir) : ir;
 
         vec3 unit_dir = v3_unit_vector(ray_in.dir);
-        double cos_theta =
-            fmin(v3_dot(v3_scale(unit_dir, -1), rec->normal), 1.0);
+        double cos_theta = fmin(v3_dot(v3_scale(unit_dir, -1), rec->normal), 1.0);
         double sin_theta = sqrt(1.0 - cos_theta * cos_theta);
 
         bool cannot_refract = (refraction_ratio * sin_theta) > 1.0;
@@ -183,8 +182,7 @@ bool scatter(Material *mat, ray ray_in, HitRecord *rec, color *attenuation,
         ray_scattered->dir = direction;
         return true;
     } else {
-        fprintf(stderr,
-                "ERROR: Unknown material type encountered in scatter()!\n");
+        fprintf(stderr, "ERROR: Unknown material type encountered in scatter()!\n");
         exit(1);
     }
 }

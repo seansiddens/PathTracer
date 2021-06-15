@@ -68,8 +68,8 @@ void ll_print(LinkedList *ll) {
         while (curr_node != ll->tail) {
             if (curr_node->type == SPHERE) {
                 Sphere *s = curr_node->object;
-                printf("Sphere: (%f, %f, %f), r = %f\n", s->center.x,
-                       s->center.y, s->center.z, s->radius);
+                printf("Sphere: (%f, %f, %f), r = %f\n", s->center.x, s->center.y,
+                       s->center.z, s->radius);
             }
 
             curr_node = curr_node->next;

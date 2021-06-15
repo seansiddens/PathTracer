@@ -9,7 +9,8 @@
 // Creates a camera with a specified aspect ratio and vertical field-of-view in
 // degrees.
 //
-Camera *cam_create(vec3 origin, double aspect_ratio, double vfov) {
+Camera *cam_create(vec3 vup, vec3 look_from, vec3 look_at, double aspect_ratio,
+                   double vfov) {
     Camera *cam = (Camera *)malloc(sizeof(Camera));
     assert(cam != NULL);
 
@@ -20,16 +21,18 @@ Camera *cam_create(vec3 origin, double aspect_ratio, double vfov) {
     cam->aspect_ratio = aspect_ratio;
     cam->viewport_height = 2.0 * h;
     cam->viewport_width = cam->aspect_ratio * cam->viewport_height;
-    cam->focal_length = 1.0;
 
-    cam->origin = origin;
-    cam->horizontal = v3_init(cam->viewport_width, 0, 0);
-    cam->vertical = v3_init(0, cam->viewport_height, 0);
-    cam->focal = v3_init(0, 0, cam->focal_length);
-    cam->lower_left_corner = v3_sub(
-        v3_sub(v3_sub(cam->origin, cam->focal), v3_scale(cam->horizontal, 0.5)),
-        v3_scale(cam->vertical, 0.5));
+    vec3 w = v3_unit_vector(v3_sub(look_from, look_at));
+    vec3 u = v3_unit_vector(v3_cross(vup, w));
+    vec3 v = v3_cross(w, u);
 
+    cam->origin = look_from;
+    cam->horizontal = v3_scale(u, cam->viewport_width);
+    cam->vertical = v3_scale(v, cam->viewport_height);
+    cam->lower_left_corner =
+        v3_sub(v3_sub(v3_sub(cam->origin, v3_scale(cam->horizontal, 0.5)),
+                      v3_scale(cam->vertical, 0.5)),
+               w);
     return cam;
 }
 
@@ -50,9 +53,8 @@ void cam_delete(Camera **cam) {
 //
 ray get_view_ray(Camera *cam, double u, double v) {
     // Get direction from camera origin to point on viewport
-    vec3 dir =
-        v3_add(v3_add(cam->lower_left_corner, v3_scale(cam->horizontal, u)),
-               v3_scale(cam->vertical, v));
+    vec3 dir = v3_add(v3_add(cam->lower_left_corner, v3_scale(cam->horizontal, u)),
+                      v3_scale(cam->vertical, v));
 
     // View ray
     ray r = {cam->origin, dir};

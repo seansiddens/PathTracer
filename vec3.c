@@ -62,9 +62,7 @@ vec3 v3_cross(vec3 u, vec3 v) {
 
 //
 // Returns the Hadamard (entrywise) product of two vectors.
-vec3 v3_hadamard(vec3 u, vec3 v) {
-    return v3_init(u.x * v.x, u.y * v.y, u.z * v.z);
-}
+vec3 v3_hadamard(vec3 u, vec3 v) { return v3_init(u.x * v.x, u.y * v.y, u.z * v.z); }
 
 //
 // Returns the product of the vector v and scalar a
@@ -177,19 +175,15 @@ bool v3_near_zero(vec3 v) {
 //
 // w = v - 2 * dot(v, n) * n
 //
-vec3 v3_reflect(vec3 v, vec3 n) {
-    return v3_sub(v, v3_scale(n, 2 * v3_dot(v, n)));
-}
+vec3 v3_reflect(vec3 v, vec3 n) { return v3_sub(v, v3_scale(n, 2 * v3_dot(v, n))); }
 
 //
 // Refracts a ray according to Snell's Law
 //
 vec3 v3_refract(vec3 uv, vec3 n, double etai_over_etat) {
     double cos_theta = fmin(v3_dot(v3_scale(uv, -1), n), 1.0);
-    vec3 r_out_perp =
-        v3_scale(v3_add(uv, v3_scale(n, cos_theta)), etai_over_etat);
-    vec3 r_out_parallel =
-        v3_scale(n, -sqrt(fabs(1.0 - v3_length_squared(r_out_perp))));
+    vec3 r_out_perp = v3_scale(v3_add(uv, v3_scale(n, cos_theta)), etai_over_etat);
+    vec3 r_out_parallel = v3_scale(n, -sqrt(fabs(1.0 - v3_length_squared(r_out_perp))));
     return v3_add(r_out_perp, r_out_parallel);
 }
 

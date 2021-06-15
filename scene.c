@@ -34,8 +34,7 @@ void scene_add_sphere(Scene *scene, double x, double y, double z, double r,
 // Intersects a ray with our scene. Returns true if it hits any object
 // in the scene. Modiefies the hit record with information about the
 // closest intersection.
-bool scene_intersect(Scene *scene, ray r, double t_min, double t_max,
-                     HitRecord *rec) {
+bool scene_intersect(Scene *scene, ray r, double t_min, double t_max, HitRecord *rec) {
     HitRecord temp_rec;
     bool hit_anything = false;
     double closest_so_far = t_max;
@@ -46,8 +45,8 @@ bool scene_intersect(Scene *scene, ray r, double t_min, double t_max,
     while (curr_node != objects->tail) {
         switch (curr_node->type) {
         case SPHERE:
-            if (sphere_intersect(*((Sphere *)curr_node->object), r, t_min,
-                                 closest_so_far, &temp_rec)) {
+            if (sphere_intersect(*((Sphere *)curr_node->object), r, t_min, closest_so_far,
+                                 &temp_rec)) {
                 hit_anything = true;
                 closest_so_far = temp_rec.t;
                 *rec = temp_rec;

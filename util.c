@@ -6,9 +6,7 @@
 double degrees_to_radians(double degrees) { return degrees * M_PI / 180.0; }
 
 // Returns a random real in [0, 1)
-double random_uniform() {
-    return (double)random() / (double)((long int)RAND_MAX + 1);
-}
+double random_uniform() { return (double)random() / (double)((long int)RAND_MAX + 1); }
 
 // Returns a random real in [min, max)
 double random_double(double min, double max) {
