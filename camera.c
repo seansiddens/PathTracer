@@ -1,13 +1,26 @@
 #include "camera.h"
+#include "util.h"
 
+#include <assert.h>
+#include <math.h>
 #include <stdlib.h>
 
-Camera *cam_create(vec3 origin, double aspect_ratio, double focal_length) {
+//
+// Creates a camera with a specified aspect ratio and vertical field-of-view in
+// degrees.
+//
+Camera *cam_create(vec3 origin, double aspect_ratio, double vfov) {
     Camera *cam = (Camera *)malloc(sizeof(Camera));
+    assert(cam != NULL);
+
+    cam->vfov = vfov;
+    double theta = degrees_to_radians(vfov);
+    double h = tan(theta / 2);
+
     cam->aspect_ratio = aspect_ratio;
-    cam->viewport_height = 2.0;
+    cam->viewport_height = 2.0 * h;
     cam->viewport_width = cam->aspect_ratio * cam->viewport_height;
-    cam->focal_length = focal_length;
+    cam->focal_length = 1.0;
 
     cam->origin = origin;
     cam->horizontal = v3_init(cam->viewport_width, 0, 0);
@@ -20,6 +33,9 @@ Camera *cam_create(vec3 origin, double aspect_ratio, double focal_length) {
     return cam;
 }
 
+//
+// Deallocates camera memory.
+//
 void cam_delete(Camera **cam) {
     if (*cam) {
         free(*cam);
@@ -28,8 +44,10 @@ void cam_delete(Camera **cam) {
     return;
 }
 
+//
 // Given normalized (u, v) coordinates, returns the view ray from the camera
 // origin to the viewport.
+//
 ray get_view_ray(Camera *cam, double u, double v) {
     // Get direction from camera origin to point on viewport
     vec3 dir =
