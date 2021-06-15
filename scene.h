@@ -13,6 +13,8 @@ typedef struct {
 
 Scene *scene_create(void);
 
+Scene *random_scene(void);
+
 void scene_delete(Scene **);
 
 void scene_add_sphere(Scene *, double x, double y, double z, double r,
