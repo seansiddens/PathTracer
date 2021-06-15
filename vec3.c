@@ -186,12 +186,12 @@ vec3 v3_reflect(vec3 v, vec3 n) {
 //
 vec3 v3_refract(vec3 uv, vec3 n, double etai_over_etat) {
     double cos_theta = fmin(v3_dot(v3_scale(uv, -1), n), 1.0);
-    vec3 r_out_perp = v3_scale(v3_add(uv, v3_scale(n, cos_theta)), etai_over_etat);
-    vec3 r_out_parallel = v3_scale(n, -sqrt(fabs(1.0 - v3_length_squared(r_out_perp))));
+    vec3 r_out_perp =
+        v3_scale(v3_add(uv, v3_scale(n, cos_theta)), etai_over_etat);
+    vec3 r_out_parallel =
+        v3_scale(n, -sqrt(fabs(1.0 - v3_length_squared(r_out_perp))));
     return v3_add(r_out_perp, r_out_parallel);
 }
-
-
 
 //
 // Prints a given vector.
