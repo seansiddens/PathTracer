@@ -21,5 +21,5 @@ clean:
 	rm -f $(EXECBIN) $(OBJECTS)
 
 format: 
-	clang-format -i *.[ch] -style="{IndentWidth: 4}"
+	clang-format -i *.[ch] -style="{IndentWidth: 4, ColumnLimit: 90}"
 
