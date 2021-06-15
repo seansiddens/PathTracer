@@ -1,10 +1,12 @@
 #include "material.h"
+#include "util.h"
 
 #include <assert.h>
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-enum MaterialType { LAMBERTIAN, METAL };
+enum MaterialType { LAMBERTIAN, METAL, DIELECTRIC };
 typedef enum MaterialType MaterialType;
 
 struct Material {
@@ -18,7 +20,21 @@ typedef struct {
 
 typedef struct {
     color albedo;
+    double fuzz;
 } Metal;
+
+typedef struct {
+    double index_of_refraction;
+} Dielectric;
+
+//
+// Use Schlick's approximation for reflectance
+//
+static double reflectance(double cosine, double ref_idx) {
+    double r0 = (1.0 - ref_idx) / (1.0 + ref_idx);
+    r0 = r0 * r0;
+    return r0 + (1 - r0) * pow(1 - cosine, 5);
+}
 
 //
 // Returns a pointer to a newly created Lambertian material.
@@ -44,8 +60,10 @@ Material *create_lambertian(color albedo) {
 //
 // Returns a pointer to a newly created metal material.
 // Metal reflects incoming rays and has a surface albedo.
+// Fuzz modifies how "fuzzy" the reflections are. A value of zero will have no
+// pertubation.
 //
-Material *create_metal(color albedo) {
+Material *create_metal(color albedo, double fuzz) {
     Material *mat = (Material *)malloc(sizeof(Material));
     assert(mat != NULL);
 
@@ -56,8 +74,29 @@ Material *create_metal(color albedo) {
     Metal *metal = (Metal *)malloc(sizeof(Metal));
     assert(metal != NULL);
     metal->albedo = albedo;
+    metal->fuzz = clamp(fuzz, 0.0, 1.0); // Ensure fuzziness factor is in [0, 1]
 
     mat->material = metal;
+
+    return mat;
+}
+
+//
+// Returns a pointer to a newly created dielectric material.
+//
+Material *create_dielectric(double index_of_refraction) {
+    Material *mat = (Material *)malloc(sizeof(Material));
+    assert(mat != NULL);
+
+    // Set material type to metal
+    mat->type = DIELECTRIC;
+
+    // Initialize the material w/ supplied albedo
+    Dielectric *dielectric = (Dielectric *)malloc(sizeof(Metal));
+    assert(dielectric != NULL);
+    dielectric->index_of_refraction = index_of_refraction;
+
+    mat->material = dielectric;
 
     return mat;
 }
@@ -108,15 +147,41 @@ bool scatter(Material *mat, ray ray_in, HitRecord *rec, color *attenuation,
         // Reflect incoming ray.
         vec3 reflected = v3_reflect(v3_unit_vector(ray_in.dir), rec->normal);
 
-        // Initialize scattered ray.
+        // Initialize scattered ray - direction is offset by fuzz factor
         ray_scattered->orig = rec->p;
-        ray_scattered->dir = reflected;
+        ray_scattered->dir =
+            v3_add(reflected, v3_scale(random_in_unit_sphere(),
+                                       ((Metal *)(mat->material))->fuzz));
 
         // Reflected light is attenuated by the surface color.
         *attenuation = ((Metal *)(mat->material))->albedo;
 
         // Return true if reflected ray is in same hemisphere as normal
         return (v3_dot(ray_scattered->dir, rec->normal) > 0);
+
+    } else if (mat->type == DIELECTRIC) {
+        Dielectric *dielectric = (Dielectric *)mat->material;
+        double ir = dielectric->index_of_refraction;
+        *attenuation = v3_init(1.0, 1.0, 1.0);
+        double refraction_ratio = rec->front_face ? (1.0 / ir) : ir;
+
+        vec3 unit_dir = v3_unit_vector(ray_in.dir);
+        double cos_theta =
+            fmin(v3_dot(v3_scale(unit_dir, -1), rec->normal), 1.0);
+        double sin_theta = sqrt(1.0 - cos_theta * cos_theta);
+
+        bool cannot_refract = (refraction_ratio * sin_theta) > 1.0;
+        vec3 direction;
+        if (cannot_refract ||
+            reflectance(cos_theta, refraction_ratio) > random_uniform()) {
+            direction = v3_reflect(unit_dir, rec->normal);
+        } else {
+            direction = v3_refract(unit_dir, rec->normal, refraction_ratio);
+        }
+
+        ray_scattered->orig = rec->p;
+        ray_scattered->dir = direction;
+        return true;
     } else {
         fprintf(stderr,
                 "ERROR: Unknown material type encountered in scatter()!\n");

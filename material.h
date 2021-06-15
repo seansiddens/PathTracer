@@ -10,7 +10,9 @@ typedef struct Material Material;
 
 Material *create_lambertian(color albedo);
 
-Material *create_metal(color albedo);
+Material *create_metal(color albedo, double fuzz);
+
+Material *create_dielectric(double index_of_refraction);
 
 void mat_delete(Material **mat);
 
