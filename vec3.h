@@ -47,4 +47,6 @@ bool v3_near_zero(vec3 v);
 
 vec3 v3_reflect(vec3 v, vec3 n);
 
+vec3 v3_refract(vec3 uv, vec3 n, double etai_over_etat);
+
 void v3_print(vec3);
