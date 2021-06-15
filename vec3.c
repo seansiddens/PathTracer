@@ -188,6 +188,21 @@ vec3 v3_refract(vec3 uv, vec3 n, double etai_over_etat) {
 }
 
 //
+// Returns a random rector in the unit disk.
+// Used to sample rays originating from lookfrom in order to create
+// defocus blur. Larger radius of disk results in larger defocus blur
+//
+vec3 random_in_unit_disk() {
+    while (true) {
+        vec3 p = v3_init(random_double(-1, 1), random_double(-1, 1), 0);
+        if (v3_length_squared(p) >= 1) {
+            continue;
+        }
+        return p;
+    }
+}
+
+//
 // Prints a given vector.
 //
 void v3_print(vec3 v) {
