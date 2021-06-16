@@ -2,14 +2,16 @@
 
 #include "aabb.h"
 #include "hit.h"
-#include "ll.h"
+#include "hittable.h"
 #include "material.h"
 #include "ray.h"
 
-typedef LinkedList HittableList;
+#include <stdint.h>
 
 typedef struct {
-    HittableList *objects;
+    Hittable **objects;
+    uint32_t object_count;
+    uint32_t max_count;
 } Scene;
 
 Scene *scene_create(void);
@@ -22,7 +24,5 @@ void scene_add_sphere(Scene *, double x, double y, double z, double r,
                       Material *material);
 
 bool scene_intersect(Scene *, ray r, double t_min, double t_max, HitRecord *rec);
-
-bool scene_bounding_box(Scene *scene, AABB *output_box);
 
 void scene_print(Scene *);

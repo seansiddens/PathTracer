@@ -1,4 +1,5 @@
 #include "scene.h"
+#include "hittable.h"
 #include "material.h"
 #include "sphere.h"
 #include "util.h"
@@ -15,10 +16,83 @@ Scene *scene_create(void) {
     Scene *scene = (Scene *)malloc(sizeof(Scene));
     assert(scene != NULL);
 
-    scene->objects = ll_create(false);
+    scene->object_count = 0;
+    scene->max_count = 16;
+
+    // Create an initial array to store our objects. Start off w/ a size of 16.
+    scene->objects = (Hittable **)calloc(scene->max_count, sizeof(Hittable *));
+
 
     return scene;
 }
+
+//
+// Destructor for a scene - deletes every object in the scene.
+// TODO: Need to delete materials accociated w/ scene objects
+//
+void scene_delete(Scene **scene) {
+    if (*scene) {
+        for (uint32_t i = 0; i < (*scene)->object_count; i++) {
+            hittable_delete(&((*scene)->objects[i]));
+        }
+
+        free(*scene);
+        *scene = NULL;
+    }
+    return;
+}
+
+// Adds a sphere to the scene
+void scene_add_sphere(Scene *scene, double x, double y, double z, double r,
+                      Material *material) {
+    // Create sphere
+    Sphere *s = sphere_create(v3_init(x, y, z), r, material);
+
+    // Surround w/ hittable so we can insert into our array
+    Hittable *hittable = hittable_create(s, SPHERE);
+
+    // Insert into next empty spot
+    scene->objects[scene->object_count] = hittable;
+    scene->object_count += 1; // Increment our counter 
+
+    // Check if the object array is full
+    if (scene->object_count == scene->max_count) {
+        // Double our capacity
+        scene->max_count *= 2;
+
+        // Reallocate memory
+        scene->objects = (Hittable **)realloc(scene->objects, scene->max_count);
+    }
+}
+
+// Intersects a ray with our scene. Returns true if it hits any object
+// in the scene. Modiefies the hit record with information about the
+// closest intersection.
+bool scene_intersect(Scene *scene, ray r, double t_min, double t_max, HitRecord *rec) {
+    HitRecord temp_rec;
+    bool hit_anything = false;
+    double closest_so_far = t_max;
+
+    // Iterate over every object and intersect w/ it
+    HittableList *objects = scene->objects;
+    Node *curr_node = objects->head->next;
+    while (curr_node != objects->tail) {
+        switch (curr_node->type) {
+        case SPHERE:
+            if (sphere_intersect(*((Sphere *)curr_node->object), r, t_min, closest_so_far,
+                                 &temp_rec)) {
+                hit_anything = true;
+                closest_so_far = temp_rec.t;
+                *rec = temp_rec;
+            }
+            break;
+        }
+        curr_node = curr_node->next;
+    }
+
+    return hit_anything;
+}
+
 
 //
 // Create and initialize a randomized scene
@@ -76,87 +150,12 @@ Scene *random_scene(void) {
     return scene;
 }
 
-// Destructor for a scene
-void scene_delete(Scene **scene) {
-    if (*scene) {
-        ll_delete(&(*scene)->objects);
-        free(*scene);
-        *scene = NULL;
+// Print the objects in our scene
+void scene_print(Scene *scene) {
+    if (scene) {
+        for (uint32_t i = 0; i < scene->object_count; i++) {
+            hittable_print(scene->objects[i]);
+        }
     }
     return;
 }
-
-// Adds a sphere to the scene
-void scene_add_sphere(Scene *scene, double x, double y, double z, double r,
-                      Material *material) {
-    Sphere *s = sphere_create(v3_init(x, y, z), r, material);
-    ll_insert(scene->objects, s, SPHERE);
-}
-
-// Intersects a ray with our scene. Returns true if it hits any object
-// in the scene. Modiefies the hit record with information about the
-// closest intersection.
-bool scene_intersect(Scene *scene, ray r, double t_min, double t_max, HitRecord *rec) {
-    HitRecord temp_rec;
-    bool hit_anything = false;
-    double closest_so_far = t_max;
-
-    // Iterate over every object and intersect w/ it
-    HittableList *objects = scene->objects;
-    Node *curr_node = objects->head->next;
-    while (curr_node != objects->tail) {
-        switch (curr_node->type) {
-        case SPHERE:
-            if (sphere_intersect(*((Sphere *)curr_node->object), r, t_min, closest_so_far,
-                                 &temp_rec)) {
-                hit_anything = true;
-                closest_so_far = temp_rec.t;
-                *rec = temp_rec;
-            }
-            break;
-        }
-        curr_node = curr_node->next;
-    }
-
-    return hit_anything;
-}
-
-//
-// Constructs a bounding box surrounding every hittable object in our scene.
-//
-bool scene_bounding_box(Scene *scene, AABB *output_box) {
-    if (scene->objects->length == 0) {
-        // No objects in scene.
-        return false;
-    }
-
-    AABB temp_box;
-    bool first_box = true;
-    // Iterate over every object
-    HittableList *objects = scene->objects;
-    Node *curr_node = objects->head->next;
-    while (curr_node != objects->tail) {
-        switch (curr_node->type) {
-        case SPHERE:
-            if (!sphere_bounding_box(*(Sphere *)curr_node->object, &temp_box)) {
-                return false;
-            }
-
-            if (first_box) {
-                *output_box = temp_box;
-            } else {
-                *output_box = surrounding_box(*output_box, temp_box);
-            }
-
-            first_box = false;
-
-            break;
-        }
-        curr_node = curr_node->next;
-    }
-
-    return true;
-}
-
-// Print the objects in our scene
-void scene_print(Scene *scene) { ll_print(scene->objects); }
