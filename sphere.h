@@ -15,7 +15,7 @@ typedef struct {
     Material *material;
 } Sphere;
 
-Sphere *sphere_create(vec3, double, Material *);
+Sphere *sphere_create(vec3 center, double radius, Material *);
 
 void sphere_delete(Sphere **);
 
