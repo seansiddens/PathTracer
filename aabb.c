@@ -5,10 +5,6 @@
 #include <math.h>
 #include <stdlib.h>
 
-struct AABB {
-    vec3 min, max;
-};
-
 //
 // Returns a pointer to a newly created AABB.
 //
@@ -22,7 +18,7 @@ AABB *aabb_create(vec3 min, vec3 max) {
     return box;
 }
 
-// 
+//
 // Initializes a bounding box w/o dyanmically allocating any memory.
 //
 AABB aabb_init(vec3 min, vec3 max) {

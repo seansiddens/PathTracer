@@ -4,6 +4,10 @@
 
 typedef struct AABB AABB;
 
+struct AABB {
+    vec3 min, max;
+};
+
 AABB *aabb_create(vec3 min, vec3 max);
 
 AABB aabb_init(vec3 min, vec3 max);
