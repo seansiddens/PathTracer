@@ -1,5 +1,6 @@
 #pragma once
 
+#include "aabb.h"
 #include "hit.h"
 #include "material.h"
 #include "ray.h"
@@ -19,3 +20,5 @@ Sphere *sphere_create(vec3, double, Material *);
 void sphere_delete(Sphere **);
 
 bool sphere_intersect(Sphere, ray, double, double, HitRecord *);
+
+bool sphere_bounding_box(Sphere s, AABB *output_box);

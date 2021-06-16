@@ -59,3 +59,16 @@ bool sphere_intersect(Sphere s, ray r, double t_min, double t_max, HitRecord *re
 
     return true;
 }
+
+//
+// Constructs a bounding box for a sphere, passed back through the AABB pointer
+// output_box. True is returned because the object has a definable bounding box.
+//
+bool sphere_bounding_box(Sphere s, AABB *output_box) {
+    vec3 min = v3_sub(s.center, v3_init(s.radius, s.radius, s.radius));
+    vec3 max = v3_add(s.center, v3_init(s.radius, s.radius, s.radius));
+
+    output_box = aabb_create(min, max);
+
+    return true;
+}
