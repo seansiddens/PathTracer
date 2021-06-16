@@ -6,7 +6,7 @@ struct AABB {
 };
 
 //
-// Returns true if a ray hit an AABB, false otherwise. 
+// Returns true if a ray hit an AABB, false otherwise.
 //
 bool aabb_hit(AABB *aabb, ray r, double t_min, double t_max) {
     // Comptue t-intervals along the x-axis
@@ -17,13 +17,13 @@ bool aabb_hit(AABB *aabb, ray r, double t_min, double t_max) {
     if (invD < 0.0) {
         swap_double(&t0, &t1);
     }
-    
+
     t_min = t0 > t_min ? t0 : t_min;
     t_max = t1 < t_max ? t1 : t_max;
 
     if (t_max <= t_min) {
         return false;
-    } 
+    }
 
     // Comptue t-intervals along the y-axis
     invD = 1.0 / r.dir.y;
@@ -33,13 +33,13 @@ bool aabb_hit(AABB *aabb, ray r, double t_min, double t_max) {
     if (invD < 0.0) {
         swap_double(&t0, &t1);
     }
-    
+
     t_min = t0 > t_min ? t0 : t_min;
     t_max = t1 < t_max ? t1 : t_max;
 
     if (t_max <= t_min) {
         return false;
-    } 
+    }
 
     // Comptue t-intervals along the z-axis
     invD = 1.0 / r.dir.z;
@@ -49,13 +49,13 @@ bool aabb_hit(AABB *aabb, ray r, double t_min, double t_max) {
     if (invD < 0.0) {
         swap_double(&t0, &t1);
     }
-    
+
     t_min = t0 > t_min ? t0 : t_min;
     t_max = t1 < t_max ? t1 : t_max;
 
     if (t_max <= t_min) {
         return false;
-    } 
+    }
 
     return true;
 }
