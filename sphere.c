@@ -68,7 +68,8 @@ bool sphere_bounding_box(Sphere s, AABB *output_box) {
     vec3 min = v3_sub(s.center, v3_init(s.radius, s.radius, s.radius));
     vec3 max = v3_add(s.center, v3_init(s.radius, s.radius, s.radius));
 
-    output_box = aabb_create(min, max);
+    output_box->min = min;
+    output_box->max = max;
 
     return true;
 }
