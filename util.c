@@ -23,3 +23,10 @@ double clamp(double x, double min, double max) {
     }
     return x;
 }
+
+void swap_double(double *x, double *y) {
+    double temp = *y;
+    *y = *x;
+    *x = temp;
+    return;
+}
