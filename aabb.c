@@ -3,6 +3,7 @@
 
 #include <assert.h>
 #include <math.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 //
@@ -105,4 +106,14 @@ AABB surrounding_box(AABB box0, AABB box1) {
                        fmax(box0.max.z, box1.max.z));
     AABB surrounding_box = {small, big};
     return surrounding_box;
+}
+
+//
+// Prints the lower and upper bound of the given AABB.
+//
+void aabb_print(AABB box) {
+    printf("Bounding box -> ");
+    printf("Min: (%f, %f, %f), Max: (%f, %f, %f)\n", box.min.x, box.min.y, box.min.z,
+           box.max.x, box.max.y, box.max.z);
+    return;
 }
