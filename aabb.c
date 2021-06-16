@@ -43,11 +43,11 @@ void aabb_delete(AABB **box) {
 //
 // Returns true if a ray hit an AABB, false otherwise.
 //
-bool aabb_hit(AABB *aabb, ray r, double t_min, double t_max) {
+bool aabb_hit(AABB aabb, ray r, double t_min, double t_max) {
     // Comptue t-intervals along the x-axis
     double invD = 1.0 / r.dir.x;
-    double t0 = (aabb->min.x - r.orig.x) * invD;
-    double t1 = (aabb->max.x - r.orig.x) * invD;
+    double t0 = (aabb.min.x - r.orig.x) * invD;
+    double t1 = (aabb.max.x - r.orig.x) * invD;
 
     if (invD < 0.0) {
         swap_double(&t0, &t1);
@@ -62,8 +62,8 @@ bool aabb_hit(AABB *aabb, ray r, double t_min, double t_max) {
 
     // Comptue t-intervals along the y-axis
     invD = 1.0 / r.dir.y;
-    t0 = (aabb->min.y - r.orig.y) * invD;
-    t1 = (aabb->max.y - r.orig.y) * invD;
+    t0 = (aabb.min.y - r.orig.y) * invD;
+    t1 = (aabb.max.y - r.orig.y) * invD;
 
     if (invD < 0.0) {
         swap_double(&t0, &t1);
@@ -78,8 +78,8 @@ bool aabb_hit(AABB *aabb, ray r, double t_min, double t_max) {
 
     // Comptue t-intervals along the z-axis
     invD = 1.0 / r.dir.z;
-    t0 = (aabb->min.z - r.orig.z) * invD;
-    t1 = (aabb->max.z - r.orig.z) * invD;
+    t0 = (aabb.min.z - r.orig.z) * invD;
+    t1 = (aabb.max.z - r.orig.z) * invD;
 
     if (invD < 0.0) {
         swap_double(&t0, &t1);

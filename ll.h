@@ -24,7 +24,7 @@ LinkedList *ll_create(bool mtf);
 
 void ll_delete(LinkedList **ll);
 
-void ll_insert(LinkedList *ll, void *, ObjectType);
+void ll_insert(LinkedList *ll, void *, HittableType type);
 
 void ll_print(LinkedList *ll);
 

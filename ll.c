@@ -48,7 +48,7 @@ void ll_delete(LinkedList **ll) {
 //
 // Inserts node at head of linked list.
 //
-void ll_insert(LinkedList *ll, void *object, ObjectType type) {
+void ll_insert(LinkedList *ll, void *object, HittableType type) {
     Node *n = node_create(object, type);
     n->next = ll->head->next;
     n->prev = ll->head;
