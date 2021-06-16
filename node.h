@@ -1,10 +1,8 @@
 #ifndef __NODE_H__
 #define __NODE_H__
 
+#include "hittable.h"
 typedef struct Node Node;
-
-enum ObjectType { SPHERE };
-typedef enum ObjectType ObjectType;
 
 // Struct definition for a node of our linked list. Lists will contain
 // objects in our scene which can be intersected with, so each node
@@ -12,12 +10,12 @@ typedef enum ObjectType ObjectType;
 // as to what type of object it is.
 struct Node {
     void *object;
-    ObjectType type;
+    HittableType type;
     Node *next;
     Node *prev;
 };
 
-Node *node_create(void *, ObjectType);
+Node *node_create(void *, HittableType type);
 
 void node_delete(Node **n);
 

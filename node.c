@@ -9,7 +9,7 @@
 //
 // Constructor for node - returns pointer to newly created node.
 //
-Node *node_create(void *object, ObjectType type) {
+Node *node_create(void *object, HittableType type) {
     Node *n = (Node *)malloc(sizeof(Node));
     if (n) {
         n->object = object;
