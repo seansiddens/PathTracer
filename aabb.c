@@ -2,6 +2,7 @@
 #include "util.h"
 
 #include <assert.h>
+#include <math.h>
 #include <stdlib.h>
 
 struct AABB {
@@ -85,4 +86,16 @@ bool aabb_hit(AABB *aabb, ray r, double t_min, double t_max) {
     }
 
     return true;
+}
+
+//
+// Computes the bounding box of two boxes.
+//
+AABB surrounding_box(AABB box0, AABB box1) {
+    vec3 small = v3_init(fmin(box0.min.x, box1.min.x), fmin(box0.min.y, box1.min.y),
+                         fmin(box0.min.z, box1.min.z));
+    vec3 big = v3_init(fmax(box0.max.x, box1.max.x), fmax(box0.max.y, box1.max.y),
+                       fmax(box0.max.z, box1.max.z));
+    AABB surrounding_box = {small, big};
+    return surrounding_box;
 }
