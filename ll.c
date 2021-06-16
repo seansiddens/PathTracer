@@ -46,12 +46,9 @@ void ll_delete(LinkedList **ll) {
 }
 
 //
-// Inserts node at head of linked list. A lookup is performed before inserting
-// to check whether there is already a matching node containing the same
-// oldspeak string. If there is a duplicate, node is not inserted.
+// Inserts node at head of linked list. 
 //
 void ll_insert(LinkedList *ll, void *object, ObjectType type) {
-    // Only insert if node not already present
     Node *n = node_create(object, type);
     n->next = ll->head->next;
     n->prev = ll->head;
