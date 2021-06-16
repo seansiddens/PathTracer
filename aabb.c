@@ -1,9 +1,36 @@
 #include "aabb.h"
 #include "util.h"
 
+#include <assert.h>
+#include <stdlib.h>
+
 struct AABB {
     vec3 min, max;
 };
+
+//
+// Returns a pointer to a newly created AABB.
+//
+AABB *aabb_create(vec3 min, vec3 max) {
+    AABB *box = (AABB *)malloc(sizeof(AABB));
+    assert(box != NULL);
+
+    box->min = min;
+    box->max = max;
+
+    return box;
+}
+
+//
+// Deletes an AABB.
+//
+void aabb_delete(AABB **box) {
+    if (*box) {
+        free(*box);
+        *box = NULL;
+    }
+    return;
+}
 
 //
 // Returns true if a ray hit an AABB, false otherwise.
