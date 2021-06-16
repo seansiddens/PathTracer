@@ -33,18 +33,19 @@ void hittable_delete(Hittable **hittable) {
     return;
 }
 
-// 
+//
 // Prints a hittable struct - calls the corresponding print function of the object type.
 //
 void hittable_print(Hittable *h) {
     if (h) {
         switch (h->type) {
-            case SPHERE:
-                sphere_print((Sphere *)h->object);
-                break;
-            default:
-                fprintf(stderr, "ERRROR: Unknown object type encountered in hittable_print()!\n");
-                break;
+        case SPHERE:
+            sphere_print((Sphere *)h->object);
+            break;
+        default:
+            fprintf(stderr,
+                    "ERRROR: Unknown object type encountered in hittable_print()!\n");
+            break;
         }
     }
 }

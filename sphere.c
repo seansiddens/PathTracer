@@ -1,8 +1,8 @@
 #include "sphere.h"
 
 #include <math.h>
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 // Constructor for a sphere
 Sphere *sphere_create(vec3 center, double radius, Material *material) {
@@ -75,12 +75,13 @@ bool sphere_bounding_box(Sphere s, AABB *output_box) {
     return true;
 }
 
-// 
+//
 // Prints the information about a given sphere.
 //
 void sphere_print(Sphere *s) {
     if (s) {
-        printf("Sphere: (%f, %f, %f), r = %f\n", s->center.x, s->center.y, s->center.z, s->radius);
+        printf("Sphere: (%f, %f, %f), r = %f\n", s->center.x, s->center.y, s->center.z,
+               s->radius);
     }
     return;
 }
