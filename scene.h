@@ -1,5 +1,6 @@
 #pragma once
 
+#include "aabb.h"
 #include "hit.h"
 #include "ll.h"
 #include "material.h"
@@ -21,5 +22,7 @@ void scene_add_sphere(Scene *, double x, double y, double z, double r,
                       Material *material);
 
 bool scene_intersect(Scene *, ray r, double t_min, double t_max, HitRecord *rec);
+
+bool scene_bounding_box(Scene *scene, AABB *output_box);
 
 void scene_print(Scene *);

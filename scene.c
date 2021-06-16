@@ -4,6 +4,8 @@
 #include "util.h"
 #include "vec3.h"
 
+#include "aabb.h"
+
 #include <assert.h>
 #include <stdbool.h>
 #include <stdlib.h>
@@ -69,7 +71,7 @@ Scene *random_scene(void) {
     scene_add_sphere(scene, -4, 1, 0, 1.0, material2);
 
     Material *material3 = create_metal(v3_init(0.7, 0.6, 0.5), 0.0);
-    scene_add_sphere(scene, 4, 1, 0, 1.0,  material3);
+    scene_add_sphere(scene, 4, 1, 0, 1.0, material3);
 
     return scene;
 }
@@ -117,6 +119,43 @@ bool scene_intersect(Scene *scene, ray r, double t_min, double t_max, HitRecord 
     }
 
     return hit_anything;
+}
+
+//
+// Constructs a bounding box surrounding every hittable object in our scene.
+//
+bool scene_bounding_box(Scene *scene, AABB *output_box) {
+    if (scene->objects->length == 0) {
+        // No objects in scene.
+        return false;
+    }
+
+    AABB temp_box;
+    bool first_box = true;
+    // Iterate over every object
+    HittableList *objects = scene->objects;
+    Node *curr_node = objects->head->next;
+    while (curr_node != objects->tail) {
+        switch (curr_node->type) {
+        case SPHERE:
+            if (!sphere_bounding_box(*(Sphere *)curr_node->object, &temp_box)) {
+                return false;
+            }
+
+            if (first_box) {
+                *output_box = temp_box;
+            } else {
+                *output_box = surrounding_box(*output_box, temp_box);
+            }
+
+            first_box = false;
+
+            break;
+        }
+        curr_node = curr_node->next;
+    }
+
+    return true;
 }
 
 // Print the objects in our scene
