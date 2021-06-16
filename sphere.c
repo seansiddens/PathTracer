@@ -2,6 +2,7 @@
 
 #include <math.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 // Constructor for a sphere
 Sphere *sphere_create(vec3 center, double radius, Material *material) {
@@ -72,4 +73,14 @@ bool sphere_bounding_box(Sphere s, AABB *output_box) {
     output_box->max = max;
 
     return true;
+}
+
+// 
+// Prints the information about a given sphere.
+//
+void sphere_print(Sphere *s) {
+    if (s) {
+        printf("Sphere: (%f, %f, %f), r = %f\n", s->center.x, s->center.y, s->center.z, s->radius);
+    }
+    return;
 }

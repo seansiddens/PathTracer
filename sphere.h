@@ -22,3 +22,5 @@ void sphere_delete(Sphere **);
 bool sphere_intersect(Sphere, ray, double, double, HitRecord *);
 
 bool sphere_bounding_box(Sphere s, AABB *output_box);
+
+void sphere_print(Sphere *s);
