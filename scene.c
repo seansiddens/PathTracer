@@ -10,6 +10,7 @@
 #include <assert.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 // Constructor for a scene
 Scene *scene_create(void) {
@@ -22,7 +23,6 @@ Scene *scene_create(void) {
     // Create an initial array to store our objects. Start off w/ a size of 16.
     scene->objects = (Hittable **)calloc(scene->max_count, sizeof(Hittable *));
 
-
     return scene;
 }
 
@@ -32,10 +32,13 @@ Scene *scene_create(void) {
 //
 void scene_delete(Scene **scene) {
     if (*scene) {
+
+        // Free every object in our object array
         for (uint32_t i = 0; i < (*scene)->object_count; i++) {
             hittable_delete(&((*scene)->objects[i]));
         }
 
+        free((*scene)->objects);
         free(*scene);
         *scene = NULL;
     }
@@ -53,7 +56,7 @@ void scene_add_sphere(Scene *scene, double x, double y, double z, double r,
 
     // Insert into next empty spot
     scene->objects[scene->object_count] = hittable;
-    scene->object_count += 1; // Increment our counter 
+    scene->object_count += 1; // Increment our counter
 
     // Check if the object array is full
     if (scene->object_count == scene->max_count) {
@@ -61,38 +64,45 @@ void scene_add_sphere(Scene *scene, double x, double y, double z, double r,
         scene->max_count *= 2;
 
         // Reallocate memory
-        scene->objects = (Hittable **)realloc(scene->objects, scene->max_count);
+        Hittable **temp = (Hittable **)realloc(scene->objects, scene->max_count * sizeof(Hittable *));
+        if (temp == NULL) {
+            fprintf(stderr, "ERROR: Hittable array reallocate failed!\n");
+            exit(1);
+        } else {
+            scene->objects = temp;
+        }
     }
 }
 
+//
 // Intersects a ray with our scene. Returns true if it hits any object
 // in the scene. Modiefies the hit record with information about the
 // closest intersection.
-bool scene_intersect(Scene *scene, ray r, double t_min, double t_max, HitRecord *rec) {
-    HitRecord temp_rec;
-    bool hit_anything = false;
-    double closest_so_far = t_max;
+/*bool scene_intersect(Scene *scene, ray r, double t_min, double t_max, HitRecord *rec)
+ * {*/
+/*HitRecord temp_rec;*/
+/*bool hit_anything = false;*/
+/*double closest_so_far = t_max;*/
 
-    // Iterate over every object and intersect w/ it
-    HittableList *objects = scene->objects;
-    Node *curr_node = objects->head->next;
-    while (curr_node != objects->tail) {
-        switch (curr_node->type) {
-        case SPHERE:
-            if (sphere_intersect(*((Sphere *)curr_node->object), r, t_min, closest_so_far,
-                                 &temp_rec)) {
-                hit_anything = true;
-                closest_so_far = temp_rec.t;
-                *rec = temp_rec;
-            }
-            break;
-        }
-        curr_node = curr_node->next;
-    }
+/*// Iterate over every object and intersect w/ it*/
+/*HittableList *objects = scene->objects;*/
+/*Node *curr_node = objects->head->next;*/
+/*while (curr_node != objects->tail) {*/
+/*switch (curr_node->type) {*/
+/*case SPHERE:*/
+/*if (sphere_intersect(*((Sphere *)curr_node->object), r, t_min, closest_so_far,*/
+/*&temp_rec)) {*/
+/*hit_anything = true;*/
+/*closest_so_far = temp_rec.t;*/
+/**rec = temp_rec;*/
+/*}*/
+/*break;*/
+/*}*/
+/*curr_node = curr_node->next;*/
+/*}*/
 
-    return hit_anything;
-}
-
+/*return hit_anything;*/
+/*}*/
 
 //
 // Create and initialize a randomized scene
@@ -101,7 +111,11 @@ Scene *random_scene(void) {
     Scene *scene = (Scene *)malloc(sizeof(Scene));
     assert(scene != NULL);
 
-    scene->objects = ll_create(false);
+    scene->object_count = 0;
+    scene->max_count = 16;
+
+    // Create an initial array to store our objects. Start off w/ a size of 16.
+    scene->objects = (Hittable **)calloc(scene->max_count, sizeof(Hittable *));
 
     Material *ground_material = create_lambertian(v3_init(0.5, 0.5, 0.5));
     scene_add_sphere(scene, 0, -1000, 0, 1000, ground_material);
