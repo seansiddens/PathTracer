@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdbool.h>
+#include <stdint.h>
 
 // Struct definition for a 3 dimensional vector.
 typedef struct {
@@ -50,5 +51,7 @@ vec3 v3_reflect(vec3 v, vec3 n);
 vec3 v3_refract(vec3 uv, vec3 n, double etai_over_etat);
 
 vec3 random_in_unit_disk();
+
+bool v3_compare(vec3 a, vec3 b, uint8_t axis);
 
 void v3_print(vec3);

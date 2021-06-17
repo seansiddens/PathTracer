@@ -3,6 +3,7 @@
 
 #include <math.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 //
 // Returns a newly initialized vector
@@ -201,6 +202,34 @@ vec3 random_in_unit_disk() {
         return p;
     }
 }
+
+//
+// Compares two vectors along the specified axis. 
+// Returns a.[axis] < b.[axis] where
+// Axis
+//  0 -> x
+//  1 -> y
+//  2 -> z
+//
+bool v3_compare(vec3 a, vec3 b, uint8_t axis) {
+    switch(axis) {
+        case 0: 
+            return a.x < b.x;
+            break;
+        case 1:
+            return a.y < b.y;
+            break;
+        case 2:
+            return a.z < b.z;
+            break;
+        default:
+            fprintf(stderr, "ERROR: Invalid axis provided to v3_compare()");
+            exit(1);
+            break;
+    }
+    
+}
+
 
 //
 // Prints a given vector.
