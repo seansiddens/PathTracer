@@ -164,6 +164,7 @@ Scene *random_scene(void) {
     return scene;
 }
 
+
 // Print the objects in our scene
 void scene_print(Scene *scene) {
     if (scene) {
@@ -171,5 +172,91 @@ void scene_print(Scene *scene) {
             hittable_print(scene->objects[i]);
         }
     }
+    return;
+}
+
+// ---------------------------------------------------------------------------------
+// Quick Sort functions used for sorting scene objects and BVH construction.
+// ---------------------------------------------------------------------------------
+
+// 
+// Swap two hittable pointers
+//
+void swap(Hittable *a, Hittable *b) {
+    Hittable t = *a;
+    *a = *b;
+    *b = t;
+}
+
+// 
+// Partition hittables array along x-axis.
+// We are sorting by the min field of the object's bounding box.
+//
+uint32_t partition_x(Hittable **objects, int64_t low, int64_t high) {
+    // Pivot
+    AABB pivot;
+    switch(objects[high]->type) {
+        case SPHERE: 
+            sphere_bounding_box(*((Sphere *)(objects[high]->object)), &pivot);
+            break;
+        default:
+            fprintf(stderr, "ERROR: Unknown object type encountered in partition_x()!\n");
+            exit(1);
+            break;
+    }
+    
+    // Index of smaller element and indicates the right position of pivot found so far
+    int64_t i = (low - 1);
+    
+    for (int64_t j = low; j <= high; j++) {
+        // If current element is smaller than pivot
+        AABB element;
+        switch(objects[j]->type) {
+            case SPHERE: 
+                sphere_bounding_box(*((Sphere *)(objects[j]->object)), &element);
+                break;
+            default:
+                fprintf(stderr, "ERROR: Unknown object type encountered in partition_x()!\n");
+                exit(1);
+                break;
+        }
+        if (element.min.x < pivot.min.x) {
+            i++; // increment index of smaller element
+            swap(objects[i], objects[j]);
+        }
+    }
+    swap(objects[i + 1], objects[high]);
+    return (i + 1);
+}
+
+
+
+//
+// Quick-sorts the scene Hittable array on the indices [start, end] by the specified axis.
+//
+void scene_sort(Scene *scene, int64_t start, int64_t end, uint8_t axis) {
+    if (start < end) {
+        int64_t partition_index = 0;
+        switch(axis) {
+            case 0:
+                // Along x-axis
+                partition_index = partition_x(scene->objects, start, end); 
+                break;
+            case 1:
+                // Along y-axis
+                break;
+            case 2:
+                // Along z-axis
+                break;
+            default:
+                fprintf(stderr, "ERROR: Invalid axis supplied to scene_sort()!\n");
+                exit(1);
+                break;
+        }
+
+        scene_sort(scene, start, partition_index - 1, axis);
+        scene_sort(scene, partition_index + 1, end, axis);
+    }
+
     return;
 }

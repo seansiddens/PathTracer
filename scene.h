@@ -26,3 +26,5 @@ void scene_add_sphere(Scene *, double x, double y, double z, double r,
 bool scene_intersect(Scene *, ray r, double t_min, double t_max, HitRecord *rec);
 
 void scene_print(Scene *);
+
+void scene_sort(Scene *, int64_t start, int64_t end, uint8_t axis);
