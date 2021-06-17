@@ -189,10 +189,10 @@ void swap(Hittable *a, Hittable *b) {
 }
 
 // 
-// Partition hittables array along x-axis.
+// Partition hittables array along the specified axis.
 // We are sorting by the min field of the object's bounding box.
 //
-uint32_t partition_x(Hittable **objects, int64_t low, int64_t high) {
+uint32_t partition(Hittable **objects, int64_t low, int64_t high, uint8_t axis) {
     // Pivot
     AABB pivot;
     switch(objects[high]->type) {
@@ -220,7 +220,7 @@ uint32_t partition_x(Hittable **objects, int64_t low, int64_t high) {
                 exit(1);
                 break;
         }
-        if (element.min.x < pivot.min.x) {
+        if (v3_compare(element.min, pivot.min, axis)) {
             i++; // increment index of smaller element
             swap(objects[i], objects[j]);
         }
@@ -236,23 +236,7 @@ uint32_t partition_x(Hittable **objects, int64_t low, int64_t high) {
 //
 void scene_sort(Scene *scene, int64_t start, int64_t end, uint8_t axis) {
     if (start < end) {
-        int64_t partition_index = 0;
-        switch(axis) {
-            case 0:
-                // Along x-axis
-                partition_index = partition_x(scene->objects, start, end); 
-                break;
-            case 1:
-                // Along y-axis
-                break;
-            case 2:
-                // Along z-axis
-                break;
-            default:
-                fprintf(stderr, "ERROR: Invalid axis supplied to scene_sort()!\n");
-                exit(1);
-                break;
-        }
+        int64_t partition_index = partition(scene->objects, start, end, axis); 
 
         scene_sort(scene, start, partition_index - 1, axis);
         scene_sort(scene, partition_index + 1, end, axis);
