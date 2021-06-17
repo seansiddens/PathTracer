@@ -30,3 +30,10 @@ void swap_double(double *x, double *y) {
     *x = temp;
     return;
 }
+
+//
+// Returns a random integer in [min, max].
+//
+int random_int(int min, int max) {
+    return (int)(random_double(min, max + 1));
+}

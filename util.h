@@ -9,3 +9,5 @@ double random_double(double min, double max);
 double clamp(double x, double min, double max);
 
 void swap_double(double *x, double *y);
+
+int random_int(int min, int max);
