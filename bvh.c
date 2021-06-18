@@ -5,11 +5,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// 
-// Constructs the BVH for a given scene. 
-// Construction uses a top down approach, where each recursive call partitions 
-// the scene objects into two sorted subsets. 
-// The start and end arguments represent start and end indices of a sub-array of the 
+//
+// Constructs the BVH for a given scene.
+// Construction uses a top down approach, where each recursive call partitions
+// the scene objects into two sorted subsets.
+// The start and end arguments represent start and end indices of a sub-array of the
 // scene objects that we wish to partition and sort.
 BVHNode *bvh_create(Scene *s, int64_t start, int64_t end) {
     // Create node
@@ -30,12 +30,12 @@ BVHNode *bvh_create(Scene *s, int64_t start, int64_t end) {
         hittable_bounding_box(*(s->objects[start]), &box);
         node->box = box;
         node->hittable = s->objects[start];
-    } else if (span == 2){
+    } else if (span == 2) {
         // More than one object in sub-array, so we are at an interior node.
         node->is_leaf = false;
         // Sort sub array
         scene_sort(s, start, end, axis);
-        
+
         // Partition into two sub-arrays of length 1 and recurse
         node->left = bvh_create(s, start, start);
         node->right = bvh_create(s, end, end);
@@ -52,7 +52,7 @@ BVHNode *bvh_create(Scene *s, int64_t start, int64_t end) {
         int64_t mid = start + (int64_t)((span - 1) / 2);
         node->left = bvh_create(s, start, mid);
         node->right = bvh_create(s, mid + 1, end);
-        
+
         // Node bounding box is the union of the children boxes
         node->box = surrounding_box(node->left->box, node->right->box);
     }
@@ -64,9 +64,10 @@ bool bvh_hit(BVHNode *node, ray r, double t_min, double t_max, HitRecord *rec) {
     if (!aabb_hit(node->box, r, t_min, t_max)) {
         return false;
     } else if (node->is_leaf) {
-        return hittable_intersect(*(node->hittable), r, t_min, t_max, rec); 
+        return hittable_intersect(*(node->hittable), r, t_min, t_max, rec);
     } else {
-        return bvh_hit(node->left, r, t_min, t_max, rec) || bvh_hit(node->right, r, t_min, t_max, rec);
+        return bvh_hit(node->left, r, t_min, t_max, rec) ||
+               bvh_hit(node->right, r, t_min, t_max, rec);
     }
 }
 

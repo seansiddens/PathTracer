@@ -2,9 +2,9 @@
 
 #include "aabb.h"
 #include "hit.h"
-#include "scene.h"
 #include "hittable.h"
 #include "ray.h"
+#include "scene.h"
 
 typedef struct BVHNode BVHNode;
 

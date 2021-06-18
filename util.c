@@ -34,6 +34,4 @@ void swap_double(double *x, double *y) {
 //
 // Returns a random integer in [min, max].
 //
-int random_int(int min, int max) {
-    return (int)(random_double(min, max + 1));
-}
+int random_int(int min, int max) { return (int)(random_double(min, max + 1)); }

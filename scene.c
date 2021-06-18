@@ -9,8 +9,8 @@
 
 #include <assert.h>
 #include <stdbool.h>
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 // Constructor for a scene
 Scene *scene_create(void) {
@@ -64,7 +64,8 @@ void scene_add_sphere(Scene *scene, double x, double y, double z, double r,
         scene->max_count *= 2;
 
         // Reallocate memory
-        Hittable **temp = (Hittable **)realloc(scene->objects, scene->max_count * sizeof(Hittable *));
+        Hittable **temp =
+            (Hittable **)realloc(scene->objects, scene->max_count * sizeof(Hittable *));
         if (temp == NULL) {
             fprintf(stderr, "ERROR: Hittable array reallocate failed!\n");
             exit(1);
@@ -164,7 +165,6 @@ Scene *random_scene(void) {
     return scene;
 }
 
-
 // Print the objects in our scene
 void scene_print(Scene *scene) {
     if (scene) {
@@ -179,7 +179,7 @@ void scene_print(Scene *scene) {
 // Quick Sort functions used for sorting scene objects and BVH construction.
 // ---------------------------------------------------------------------------------
 
-// 
+//
 // Swap two hittable pointers
 //
 void swap(Hittable *a, Hittable *b) {
@@ -188,37 +188,37 @@ void swap(Hittable *a, Hittable *b) {
     *b = t;
 }
 
-// 
+//
 // Partition hittables array along the specified axis.
 // We are sorting by the min field of the object's bounding box.
 //
 uint32_t partition(Hittable **objects, int64_t low, int64_t high, uint8_t axis) {
     // Pivot
     AABB pivot;
-    switch(objects[high]->type) {
-        case SPHERE: 
-            sphere_bounding_box(*((Sphere *)(objects[high]->object)), &pivot);
+    switch (objects[high]->type) {
+    case SPHERE:
+        sphere_bounding_box(*((Sphere *)(objects[high]->object)), &pivot);
+        break;
+    default:
+        fprintf(stderr, "ERROR: Unknown object type encountered in partition_x()!\n");
+        exit(1);
+        break;
+    }
+
+    // Index of smaller element and indicates the right position of pivot found so far
+    int64_t i = (low - 1);
+
+    for (int64_t j = low; j <= high; j++) {
+        // If current element is smaller than pivot
+        AABB element;
+        switch (objects[j]->type) {
+        case SPHERE:
+            sphere_bounding_box(*((Sphere *)(objects[j]->object)), &element);
             break;
         default:
             fprintf(stderr, "ERROR: Unknown object type encountered in partition_x()!\n");
             exit(1);
             break;
-    }
-    
-    // Index of smaller element and indicates the right position of pivot found so far
-    int64_t i = (low - 1);
-    
-    for (int64_t j = low; j <= high; j++) {
-        // If current element is smaller than pivot
-        AABB element;
-        switch(objects[j]->type) {
-            case SPHERE: 
-                sphere_bounding_box(*((Sphere *)(objects[j]->object)), &element);
-                break;
-            default:
-                fprintf(stderr, "ERROR: Unknown object type encountered in partition_x()!\n");
-                exit(1);
-                break;
         }
         if (v3_compare(element.min, pivot.min, axis)) {
             i++; // increment index of smaller element
@@ -229,14 +229,12 @@ uint32_t partition(Hittable **objects, int64_t low, int64_t high, uint8_t axis) 
     return (i + 1);
 }
 
-
-
 //
 // Quick-sorts the scene Hittable array on the indices [start, end] by the specified axis.
 //
 void scene_sort(Scene *scene, int64_t start, int64_t end, uint8_t axis) {
     if (start < end) {
-        int64_t partition_index = partition(scene->objects, start, end, axis); 
+        int64_t partition_index = partition(scene->objects, start, end, axis);
 
         scene_sort(scene, start, partition_index - 1, axis);
         scene_sort(scene, partition_index + 1, end, axis);

@@ -1,6 +1,8 @@
+#include "bvh.h"
 #include "camera.h"
 #include "color.h"
 #include "hit.h"
+#include "hittable.h"
 #include "material.h"
 #include "ray.h"
 #include "scene.h"
@@ -22,7 +24,7 @@
 //
 // Returns the color a given ray is pointing at
 //
-color ray_color(ray r, Scene *scene, uint32_t depth) {
+color ray_color(Scene *scene, BVHNode *bvh, ray r, uint32_t depth) {
     HitRecord rec;
 
     // If we've exceeded the ray bounce limit, no more light is gathered.
@@ -31,11 +33,11 @@ color ray_color(ray r, Scene *scene, uint32_t depth) {
     }
 
     // Check if ray hits an object in our scene
-    if (scene_intersect(scene, r, 0.001, INFINITY, &rec)) {
+    if (bvh_hit(bvh, r, 0.001, INFINITY, &rec)) {
         ray scattered;
         color attenuation;
         if (scatter(rec.material, r, &rec, &attenuation, &scattered)) {
-            return v3_hadamard(attenuation, ray_color(scattered, scene, depth - 1));
+            return v3_hadamard(attenuation, ray_color(scene, bvh, scattered, depth - 1));
         }
         return v3_init(0, 0, 0);
     }
@@ -50,7 +52,7 @@ color ray_color(ray r, Scene *scene, uint32_t depth) {
 
 int main(void) {
     // Image Settings
-    const double aspect_ratio = 4.0 / 3.0;
+    const double aspect_ratio = 3.0 / 2.0;
     const uint32_t image_width = 400;
     const uint32_t image_height = (uint32_t)(image_width / aspect_ratio);
     // Buffer for storing image data
@@ -59,19 +61,22 @@ int main(void) {
     uint32_t max_depth = 50;
 
     // Camera settings
-    Camera *cam = cam_create(v3_init(0, 0, 0), aspect_ratio, 85.0);
+    vec3 vup = v3_init(0, 1, 0);
+    vec3 look_from = v3_init(0, 2, 2);
+    vec3 look_at = v3_init(0, 0, -1);
+    double dist_to_focus = v3_length(v3_sub(look_from, look_at));
+    double aperture = 0.1;
+    Camera *cam =
+        cam_create(vup, look_from, look_at, aspect_ratio, 65, aperture, dist_to_focus);
 
     // Scene settings
-    Material *mat_ground = create_lambertian(v3_init(0.8, 0.8, 0.0));
-    Material *mat_center = create_lambertian(v3_init(0.7, 0.3, 0.3));
-    Material *mat_left = create_dielectric(1.5);
-    Material *mat_right = create_metal(v3_init(0.8, 0.6, 0.2), 0.1);
-
+    /*Scene *scene = random_scene();*/
     Scene *scene = scene_create();
-    scene_add_sphere(scene, 0, 0, -1, 0.5, mat_center);
-    scene_add_sphere(scene, 0, -100.5, -1, 100, mat_ground);
-    scene_add_sphere(scene, -1.0, 0.0, -1.0, 0.5, mat_left);
-    scene_add_sphere(scene, 1.0, 0.0, -1.0, 0.5, mat_right);
+
+    Material *mat = create_lambertian(v3_init(0.8, 0.8, 0.9));
+    scene_add_sphere(scene, 0, 1, -1, 1.0, mat);
+
+    BVHNode *bvh = bvh_create(scene, 0, scene->object_count - 1);
 
     // Iterate over each pixel in the image
     for (uint32_t y = 0; y < image_height; y++) {
@@ -95,7 +100,8 @@ int main(void) {
                 ray view_ray = get_view_ray(cam, u, v);
 
                 // Accumulate color of what ray is looking at
-                pixel_color = v3_add(pixel_color, ray_color(view_ray, scene, max_depth));
+                pixel_color =
+                    v3_add(pixel_color, ray_color(scene, bvh, view_ray, max_depth));
             }
             // Write color to final image
             write_color(image, pixel_color, i, samples_per_pixel);
