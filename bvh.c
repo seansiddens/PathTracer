@@ -64,10 +64,19 @@ bool bvh_hit(BVHNode *node, ray r, double t_min, double t_max, HitRecord *rec) {
     if (!aabb_hit(node->box, r, t_min, t_max)) {
         return false;
     } else if (node->is_leaf) {
-        return hittable_intersect(*(node->hittable), r, t_min, t_max, rec);
+        HitRecord temp_rec;
+        if (hittable_intersect(*(node->hittable), r, t_min, t_max, &temp_rec)) {
+            if (temp_rec.t < rec->t) {
+                *rec = temp_rec;
+            }
+            return true;
+        }
+        return false;
     } else {
-        return bvh_hit(node->left, r, t_min, t_max, rec) ||
-               bvh_hit(node->right, r, t_min, t_max, rec);
+        bool left_hit = bvh_hit(node->left, r, t_min, t_max, rec);
+        bool right_hit = bvh_hit(node->right, r, t_min, t_max, rec);
+        return left_hit || right_hit;
+               
     }
 }
 
