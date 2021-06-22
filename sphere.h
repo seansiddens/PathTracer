@@ -23,4 +23,6 @@ bool sphere_intersect(Sphere, ray, double, double, HitRecord *);
 
 bool sphere_bounding_box(Sphere s, AABB *output_box);
 
+void get_sphere_uv(Sphere s, vec3 p, double *u, double *v);
+
 void sphere_print(Sphere *s);

@@ -76,6 +76,20 @@ bool sphere_bounding_box(Sphere s, AABB *output_box) {
 }
 
 //
+// Given a point on the unit sphere centered at the origin, computes the (u, v)
+// coordinates.
+//
+void get_sphere_uv(Sphere s, vec3 p, double *u, double *v) {
+    double theta = acos(-p.y);
+    double phi = atan2(-p.z, p.x) + M_PI;
+
+    *u = phi / 2 * M_PI;
+    *v = theta / M_PI;
+
+    return;
+}
+
+//
 // Prints the information about a given sphere.
 //
 void sphere_print(Sphere *s) {
