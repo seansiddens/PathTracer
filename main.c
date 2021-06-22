@@ -63,6 +63,8 @@ color get_background_color(vec3 dir) {
     /*col.y = skybox[i + 1] / (double)255;*/
     /*col.z = skybox[i + 2] / (double)255;*/
 
+    /*col = SRGB_to_linear(col);*/
+
     col = v3_init(0, 0, 0);
 
     return col;
@@ -144,7 +146,7 @@ int main(void) {
     const uint32_t image_height = (uint32_t)(image_width / aspect_ratio);
     // Buffer for storing image data
     uint8_t *image = (uint8_t *)calloc(image_width * image_height * 3, sizeof(uint8_t));
-    uint32_t samples_per_pixel = 400;
+    uint32_t samples_per_pixel = 100;
     uint32_t max_depth = 50;
 
     // Camera settings
@@ -152,7 +154,7 @@ int main(void) {
     vec3 look_from = v3_init(0, 0.5, 4);
     vec3 look_at = v3_init(0, 0, -1);
     double dist_to_focus = v3_length(v3_sub(look_from, look_at));
-    double aperture = 0.05;
+    double aperture = 0.01;
     double vfov = 45;
     Camera *cam =
         cam_create(vup, look_from, look_at, aspect_ratio, vfov, aperture, dist_to_focus);
@@ -163,13 +165,13 @@ int main(void) {
     Material *met1 = create_metal(v3_init(0.8, 0.3, 0.4), 0.8);
     Material *met2 = create_metal(v3_init(0.3, 0.3, 0.7), 0.05);
     Material *die1 = create_dielectric(1.5);
-    Material *light = create_diffuse_light(v3_init(1.0, 1.0, 1.0));
+    Material *light = create_diffuse_light(v3_init(100.0, 100.0, 100.0));
 
     scene_add_sphere(scene, 0, 0, -1, 0.5, met1);
     scene_add_sphere(scene, -1.3, 0, -1, 0.5, met2);
     scene_add_sphere(scene, 1.3, 0, -1, 0.5, die1);
     scene_add_sphere(scene, 0, -1000.5, -1, 1000, lam1);
-    scene_add_sphere(scene, 1.5, 2, -1.3, 0.5, light);
+    scene_add_sphere(scene, 1.5, 1000.5, -3, 100, light);
 
     // Load skybox asset
 
