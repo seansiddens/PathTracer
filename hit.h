@@ -16,6 +16,7 @@ typedef struct {
     vec3 normal;
     struct Material *material;
     double t;
+    double u, v;
     bool front_face;
 } HitRecord;
 
