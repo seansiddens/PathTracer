@@ -12,6 +12,11 @@
 // The start and end arguments represent start and end indices of a sub-array of the
 // scene objects that we wish to partition and sort.
 BVHNode *bvh_create(Scene *s, int64_t start, int64_t end) {
+    // Set root of BVH to NULL if scene contains no objects
+    if (s->object_count == 0) {
+        return NULL;
+    }
+
     // Create node
     BVHNode *node = (BVHNode *)calloc(1, sizeof(BVHNode));
     assert(node != NULL);
@@ -61,6 +66,9 @@ BVHNode *bvh_create(Scene *s, int64_t start, int64_t end) {
 }
 
 bool bvh_hit(BVHNode *node, ray r, double t_min, double t_max, HitRecord *rec) {
+    if (node == NULL) {
+        return false;
+    }
     if (!aabb_hit(node->box, r, t_min, t_max)) {
         return false;
     } else if (node->is_leaf) {
