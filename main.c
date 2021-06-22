@@ -22,8 +22,6 @@
 #define MULITHREAD true
 #define NUM_THREADS 8
 
-
-
 typedef struct {
     Scene *scene;
     Camera *cam;
@@ -47,7 +45,7 @@ color ray_color(Scene *scene, BVHNode *bvh, ray r, uint32_t depth) {
     if (depth == 0) {
         return v3_init(0, 0, 0);
     }
-        
+
     // Check if ray hits an object in our scene
     if (bvh_hit(bvh, r, 0.001, INFINITY, &rec)) {
         ray scattered;
@@ -72,7 +70,8 @@ void *render(void *thread_args) {
     printf("Thread %d start!\n", args->thread_id);
 
     // Render chunk of image buffer from start_idx to end_idx
-    for (uint32_t i = args->thread_id * 3; i <= args->image_width * args->image_height * 3; i += (NUM_THREADS * 3)) {
+    for (uint32_t i = args->thread_id * 3;
+         i <= args->image_width * args->image_height * 3; i += (NUM_THREADS * 3)) {
         uint32_t x = (i / 3) % args->image_width;
         uint32_t y = i / args->image_width / 3;
 
@@ -88,8 +87,8 @@ void *render(void *thread_args) {
             ray view_ray = get_view_ray(args->cam, u, v);
 
             // Accumulate color of what ray is looking at
-            pixel_color =
-                v3_add(pixel_color, ray_color(args->scene, args->bvh, view_ray, args->max_depth));
+            pixel_color = v3_add(pixel_color, ray_color(args->scene, args->bvh, view_ray,
+                                                        args->max_depth));
         }
         // Write color to final image
         write_color(args->image, pixel_color, i, args->samples_per_pixel);
@@ -145,7 +144,8 @@ int main(void) {
 
         // Spawn each thread
         for (int thread = 0; thread < NUM_THREADS; thread++) {
-            int rc = pthread_create(&threads[thread], NULL, render, (void *)&thread_args[thread]);
+            int rc = pthread_create(&threads[thread], NULL, render,
+                                    (void *)&thread_args[thread]);
             if (rc) {
                 fprintf(stderr, "ERROR: Return code from pthread_create() is %d\n", rc);
                 exit(1);
@@ -174,7 +174,8 @@ int main(void) {
                     // Map image coordinates to normalized (u, v) coordinates,
                     // offset by random amount for antialiasing
                     double u = (double)(x + random_uniform()) / (image_width - 1);
-                    double v = 1.0 - ((double)(y + random_uniform()) / (image_height - 1));
+                    double v =
+                        1.0 - ((double)(y + random_uniform()) / (image_height - 1));
 
                     // Get view ray from camera to viewport
                     ray view_ray = get_view_ray(cam, u, v);
@@ -187,11 +188,7 @@ int main(void) {
                 write_color(image, pixel_color, i, samples_per_pixel);
             }
         }
-
     }
-
-
-
 
     // Write contents of image buffer out to PNG
     char *image_name = "out.png";

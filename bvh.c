@@ -76,7 +76,6 @@ bool bvh_hit(BVHNode *node, ray r, double t_min, double t_max, HitRecord *rec) {
         bool left_hit = bvh_hit(node->left, r, t_min, t_max, rec);
         bool right_hit = bvh_hit(node->right, r, t_min, t_max, rec);
         return left_hit || right_hit;
-               
     }
 }
 
