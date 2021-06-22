@@ -6,7 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-enum MaterialType { LAMBERTIAN, METAL, DIELECTRIC };
+enum MaterialType { LAMBERTIAN, METAL, DIELECTRIC, DIFFUSE_LIGHT};
 typedef enum MaterialType MaterialType;
 
 struct Material {
@@ -26,6 +26,10 @@ typedef struct {
 typedef struct {
     double index_of_refraction;
 } Dielectric;
+
+typedef struct {
+    color emittted;
+} DiffuseLight;
 
 //
 // Use Schlick's approximation for reflectance
@@ -97,6 +101,21 @@ Material *create_dielectric(double index_of_refraction) {
     dielectric->index_of_refraction = index_of_refraction;
 
     mat->material = dielectric;
+
+    return mat;
+}
+
+Material *create_diffuse_light(color emitted) {
+    Material *mat = (Material *)malloc(sizeof(Material));
+    assert(mat != NULL);
+
+    mat->type = DIFFUSE_LIGHT;
+
+    DiffuseLight *diffuse_light = (DiffuseLight *)malloc(sizeof(DiffuseLight));
+    assert(diffuse_light != NULL);
+    diffuse_light->emittted = emitted;
+
+    mat->material = diffuse_light;
 
     return mat;
 }
@@ -181,8 +200,32 @@ bool scatter(Material *mat, ray ray_in, HitRecord *rec, color *attenuation,
         ray_scattered->orig = rec->p;
         ray_scattered->dir = direction;
         return true;
+    
+    } else if (mat->type == DIFFUSE_LIGHT) {
+        return false; 
     } else {
         fprintf(stderr, "ERROR: Unknown material type encountered in scatter()!\n");
         exit(1);
     }
+}
+
+//
+// 
+color emitted(Material *mat, double u, double v, vec3 p) {
+    color col;
+    switch (mat->type) {
+        case LAMBERTIAN:
+            col = v3_init(0, 0, 0);
+            break;
+        case METAL:
+            col = v3_init(0, 0, 0);
+            break;
+        case DIELECTRIC:
+            col = v3_init(0, 0, 0);
+            break;
+        case DIFFUSE_LIGHT:
+            col = ((DiffuseLight *)mat->material)->emittted;
+            break;
+    }
+    return col;
 }
