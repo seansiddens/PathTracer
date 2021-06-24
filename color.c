@@ -4,7 +4,7 @@
 #include <assert.h>
 #include <math.h>
 
-// 
+//
 // Returns the gamma corrected version of the color
 //
 color gamma_correct(color col, double gamma) {
@@ -12,12 +12,12 @@ color gamma_correct(color col, double gamma) {
     col.y = pow(col.y, gamma);
     col.z = pow(col.z, gamma);
 
-    return col;   
+    return col;
 }
 
-// 
+//
 // Transforms color from linear to SRGB.
-// Source(s): 
+// Source(s):
 //      - https://stackoverflow.com/questions/34472375/linear-to-srgb-conversion
 //      - https://www.ryanjuckett.com/rgb-color-space-conversion/
 //
@@ -62,7 +62,7 @@ color SRGB_to_linear(color rgb) {
 
 //
 // ACES tone mapping curve fit to go from HDR to LDR
-//https://knarkowicz.wordpress.com/2016/01/06/aces-filmic-tone-mapping-curve/
+// https://knarkowicz.wordpress.com/2016/01/06/aces-filmic-tone-mapping-curve/
 //
 color ACES_film(color rgb) {
     double a = 2.51;
@@ -84,7 +84,6 @@ color ACES_film(color rgb) {
 //
 void write_color(uint8_t *image, color pixel_color, uint32_t i,
                  uint32_t samples_per_pixel) {
-    
 
     // Scale color based on the number of samples taken per pixel and then
     // gamma-correct.
@@ -94,8 +93,8 @@ void write_color(uint8_t *image, color pixel_color, uint32_t i,
     // apply exposure
     double exposure = 1.0;
     pixel_color = v3_scale(pixel_color, exposure);
-    
-    // convert unbounded HDR color range to SDR color range    
+
+    // convert unbounded HDR color range to SDR color range
     pixel_color = ACES_film(pixel_color);
 
     // Convert from linear to sRGB for display
@@ -106,4 +105,3 @@ void write_color(uint8_t *image, color pixel_color, uint32_t i,
     image[i + 1] = (uint8_t)(255 * clamp(pixel_color.y, 0.0, 1.0));
     image[i + 2] = (uint8_t)(255 * clamp(pixel_color.z, 0.0, 1.0));
 }
-

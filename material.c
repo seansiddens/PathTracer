@@ -6,7 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-enum MaterialType { LAMBERTIAN, METAL, DIELECTRIC, DIFFUSE_LIGHT};
+enum MaterialType { LAMBERTIAN, METAL, DIELECTRIC, DIFFUSE_LIGHT };
 typedef enum MaterialType MaterialType;
 
 struct Material {
@@ -200,9 +200,9 @@ bool scatter(Material *mat, ray ray_in, HitRecord *rec, color *attenuation,
         ray_scattered->orig = rec->p;
         ray_scattered->dir = direction;
         return true;
-    
+
     } else if (mat->type == DIFFUSE_LIGHT) {
-        return false; 
+        return false;
     } else {
         fprintf(stderr, "ERROR: Unknown material type encountered in scatter()!\n");
         exit(1);
@@ -210,22 +210,22 @@ bool scatter(Material *mat, ray ray_in, HitRecord *rec, color *attenuation,
 }
 
 //
-// 
+//
 color emitted(Material *mat, double u, double v, vec3 p) {
     color col;
     switch (mat->type) {
-        case LAMBERTIAN:
-            col = v3_init(0, 0, 0);
-            break;
-        case METAL:
-            col = v3_init(0, 0, 0);
-            break;
-        case DIELECTRIC:
-            col = v3_init(0, 0, 0);
-            break;
-        case DIFFUSE_LIGHT:
-            col = ((DiffuseLight *)mat->material)->emittted;
-            break;
+    case LAMBERTIAN:
+        col = v3_init(0, 0, 0);
+        break;
+    case METAL:
+        col = v3_init(0, 0, 0);
+        break;
+    case DIELECTRIC:
+        col = v3_init(0, 0, 0);
+        break;
+    case DIFFUSE_LIGHT:
+        col = ((DiffuseLight *)mat->material)->emittted;
+        break;
     }
     return col;
 }
