@@ -65,11 +65,11 @@ color SRGB_to_linear(color rgb) {
 // https://knarkowicz.wordpress.com/2016/01/06/aces-filmic-tone-mapping-curve/
 //
 color ACES_film(color rgb) {
-    double a = 2.51;
-    double b = 0.03;
-    double c = 2.43;
-    double d = 0.59;
-    double e = 0.14;
+    double const a = 2.51;
+    double const b = 0.03;
+    double const c = 2.43;
+    double const d = 0.59;
+    double const e = 0.14;
 
     rgb.x = clamp((rgb.x * (a * rgb.x + b)) / (rgb.x * (c * rgb.x + d) + e), 0.0, 1.0);
     rgb.y = clamp((rgb.y * (a * rgb.y + b)) / (rgb.y * (c * rgb.y + d) + e), 0.0, 1.0);
@@ -91,7 +91,7 @@ void write_color(uint8_t *image, color pixel_color, uint32_t i,
     pixel_color = v3_scale(pixel_color, scale);
 
     // apply exposure
-    double exposure = 1.0;
+    double const exposure = 1.0;
     pixel_color = v3_scale(pixel_color, exposure);
 
     // convert unbounded HDR color range to SDR color range
