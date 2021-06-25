@@ -1,4 +1,5 @@
 #include "hittable.h"
+#include "aarect.h"
 #include "sphere.h"
 
 #include <assert.h>
@@ -37,8 +38,11 @@ bool hittable_intersect(Hittable h, ray r, double t_min, double t_max, HitRecord
     bool hit = false;
     switch (h.type) {
     case SPHERE: {
-        Sphere s = *((Sphere *)(h.object));
-        hit = sphere_intersect(s, r, t_min, t_max, rec);
+        hit = sphere_intersect(*((Sphere *)(h.object)), r, t_min, t_max, rec);
+        break;
+    }
+    case XYRECT: {
+        hit = xy_rect_intersect(*((XYRect *)(h.object)), r, t_min, t_max, rec);
         break;
     }
     default:
@@ -56,20 +60,13 @@ bool hittable_intersect(Hittable h, ray r, double t_min, double t_max, HitRecord
 // output_box. True is returned because the object has a definable bounding box.
 //
 bool hittable_bounding_box(Hittable h, AABB *output_box) {
-    vec3 min;
-    vec3 max;
     switch (h.type) {
-    case SPHERE: {
-        Sphere *s = ((Sphere *)(h.object));
-        min = v3_sub(s->center, v3_init(s->radius, s->radius, s->radius));
-        max = v3_add(s->center, v3_init(s->radius, s->radius, s->radius));
-
-        output_box->min = min;
-        output_box->max = max;
-
-        return true;
+    case SPHERE:
+        return sphere_bounding_box(*((Sphere *)(h.object)), output_box);
         break;
-    }
+    case XYRECT:
+        return xy_rect_bounding_box(*((XYRect *)(h.object)), output_box);
+        break;
     default:
         fprintf(stderr,
                 "ERROR: Invalid hittable type encountered in hittable_bounding_box()\n");
