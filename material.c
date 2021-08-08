@@ -157,7 +157,7 @@ bool scatter(Material *mat, ray ray_in, HitRecord *rec, color *attenuation,
 
         // Initialize scattered ray.
         ray_scattered->orig = rec->p;
-        ray_scattered->dir = scatter_direction;
+        ray_scattered->dir = v3_unit_vector(scatter_direction);
 
         // Reflected light is attenuated by the surface color.
         *attenuation = ((Lambertian *)(mat->material))->albedo;

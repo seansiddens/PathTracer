@@ -1,3 +1,4 @@
+#include "aarect.h"
 #include "bvh.h"
 #include "camera.h"
 #include "color.h"
@@ -26,6 +27,10 @@
 #define MULITHREAD true
 #define NUM_THREADS 8
 
+// TODOS: 
+// ----------------------------------------------------------------------------
+// TODO: Deallocate material memory.
+
 unsigned char *skybox;
 int sky_width, sky_height, sky_channels;
 
@@ -42,36 +47,45 @@ typedef struct {
 // Given a unit vector, return a color.
 //
 color get_background_color(vec3 dir) {
-    color col;
+    color col; // Final bg color to return
 
-    // Background gradient
-    /*double t = 0.5 * (unit_direction.y + 1.0);*/
-    /*color start_color = v3_init(1.0, 1.0, 1.0);*/
-    /*color end_color = v3_init(0.5, 0.7, 1.0);*/
-    /*return v3_lerp(start_color, end_color, t);*/
+    int bg_type = 1;
+    switch (bg_type) {
+    case 1: {
+        // Set background to a gradient between two colors
+        double t = 0.5 * (dir.y + 1.0);
+        color start_color = v3_init(0.9, 0.9, 1.0);
+        color end_color = v3_init(0.1, 0.1, 1.0);
+        col = v3_lerp(start_color, end_color, t);
+        break;
+    }
+    case 2: {
+        // Set background to a skybox image
+        // Get uv coords of skybox
+        double u = 0.5 + (atan2(dir.x, dir.z) / (2 * M_PI));
+        double v = 0.5 + (asin(dir.y) / M_PI);
 
-    // Get uv coords of skybox
-    /*double u = 0.5 + (atan2(dir.x, dir.z) / (2 * M_PI));*/
-    /*double v = 0.5 + (asin(dir.y) / M_PI);*/
+        uint32_t x = u * sky_width;
+        uint32_t y = (1.0 - v) * sky_height;
 
-    /*uint32_t x = u * sky_width;*/
-    /*uint32_t y = (1.0 - v) * sky_height;*/
+        uint32_t i = y * sky_width * sky_channels + x * sky_channels;
 
-    /*uint32_t i = y * sky_width * sky_channels + x * sky_channels;*/
+        col.x = skybox[i] / (double)255;
+        col.y = skybox[i + 1] / (double)255;
+        col.z = skybox[i + 2] / (double)255;
 
-    /*col.x = skybox[i] / (double)255;*/
-    /*col.y = skybox[i + 1] / (double)255;*/
-    /*col.z = skybox[i + 2] / (double)255;*/
-
-    /*col = SRGB_to_linear(col);*/
-
-    col = v3_init(0, 0, 0);
+        col = SRGB_to_linear(col);
+        break;
+    }
+    default:
+        // Just set bg to black
+        col = v3_init(0, 0, 0);
+        break;
+    }
 
     return col;
 }
 
-// TODO: Every time an object is added to the scene, keep track of it's material
-// using a LL, then when scene_delete() is called, free that memory.
 
 //
 // Returns the color a given ray is pointing at
@@ -91,6 +105,10 @@ color ray_color(Scene *scene, BVHNode *bvh, ray r, uint32_t depth) {
         vec3 unit_direction = v3_unit_vector(r.dir);
         return get_background_color(unit_direction);
     }
+
+    // Ray has hit an object
+    color red = {1.0, 0.0, 0.0};
+    return red;
 
     ray scattered;
     color attenuation;
@@ -141,42 +159,43 @@ void *render(void *thread_args) {
 
 int main(void) {
     // Image Settings
-    const double aspect_ratio = 3.0 / 2.0;
+    const double aspect_ratio = 1.0;
     const uint32_t image_width = 400;
     const uint32_t image_height = (uint32_t)(image_width / aspect_ratio);
     // Buffer for storing image data
     uint8_t *image = (uint8_t *)calloc(image_width * image_height * 3, sizeof(uint8_t));
-    uint32_t samples_per_pixel = 100;
+    uint32_t samples_per_pixel = 2;
     uint32_t max_depth = 50;
 
     // Camera settings
     vec3 vup = v3_init(0, 1, 0);
-    vec3 look_from = v3_init(0, 0.5, 4);
-    vec3 look_at = v3_init(0, 0, -1);
+    vec3 look_from = v3_init(-10, 0, 0);
+    vec3 look_at = v3_init(0, 0, 0);
     double dist_to_focus = v3_length(v3_sub(look_from, look_at));
-    double aperture = 0.01;
-    double vfov = 45;
+    double aperture = 0.05;
+    double vfov = 40;
     Camera *cam =
         cam_create(vup, look_from, look_at, aspect_ratio, vfov, aperture, dist_to_focus);
 
     // Scene settings
     Scene *scene = scene_create();
-    Material *lam1 = create_lambertian(v3_init(0.8, 0.8, 0.8));
-    Material *met1 = create_metal(v3_init(0.8, 0.3, 0.4), 0.8);
-    Material *met2 = create_metal(v3_init(0.3, 0.3, 0.7), 0.05);
-    Material *die1 = create_dielectric(1.5);
-    Material *light = create_diffuse_light(v3_init(100.0, 100.0, 100.0));
+    
+    Material *red = create_lambertian(v3_init(0.65, 0.05, 0.05));
+    Material *white = create_lambertian(v3_init(0.73, 0.73, 0.73));
+    Material *green = create_lambertian(v3_init(0.12, 0.45, 0.15));
+    Material *light = create_diffuse_light(v3_init(15, 15, 15));
 
-    scene_add_sphere(scene, 0, 0, -1, 0.5, met1);
-    scene_add_sphere(scene, -1.3, 0, -1, 0.5, met2);
-    scene_add_sphere(scene, 1.3, 0, -1, 0.5, die1);
-    scene_add_sphere(scene, 0, -1000.5, -1, 1000, lam1);
-    scene_add_sphere(scene, 1.5, 1000.5, -3, 100, light);
+    /*scene_add_yz_rect(scene, 0, 555, 0, 555, 555, green);*/
+    /*scene_add_xy_rect(scene, 0, 555, 0, 555, 555, white);*/
+    /*scene_add_xz_rect(scene, 0, 555, 0, 555, 555, white);*/
+
+    /*scene_add_xy_rect(scene, -1, 1, -1, 1, 0, green);*/
+    scene_add_yz_rect(scene, -1, 1, -1, 1, 0, green);
 
     // Load skybox asset
-
-    skybox = stbi_load("assets/kloppenheim_sky_4k.hdr", &sky_width, &sky_height,
+    skybox = stbi_load("assets/parched_canal_4k.hdr", &sky_width, &sky_height,
                        &sky_channels, 0);
+    printf("Skybox: %d x %d, channels = %d\n", sky_width, sky_height, sky_channels);
     if (skybox == NULL) {
         fprintf(stderr, "ERROR: Failed to load skybox HDRI image!\n");
         exit(1);
