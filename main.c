@@ -27,9 +27,8 @@
 #define MULITHREAD true
 #define NUM_THREADS 8
 
-// TODOS: 
-// ----------------------------------------------------------------------------
 // TODO: Deallocate material memory.
+// TODO: Test!
 
 unsigned char *skybox;
 int sky_width, sky_height, sky_channels;
@@ -107,8 +106,8 @@ color ray_color(Scene *scene, BVHNode *bvh, ray r, uint32_t depth) {
     }
 
     // Ray has hit an object
-    color red = {1.0, 0.0, 0.0};
-    return red;
+//    color red = {1.0, 0.0, 0.0};
+//    return red;
 
     ray scattered;
     color attenuation;
@@ -159,17 +158,17 @@ void *render(void *thread_args) {
 
 int main(void) {
     // Image Settings
-    const double aspect_ratio = 1.0;
+    const double aspect_ratio = 4.0 / 3.0;
     const uint32_t image_width = 400;
     const uint32_t image_height = (uint32_t)(image_width / aspect_ratio);
     // Buffer for storing image data
     uint8_t *image = (uint8_t *)calloc(image_width * image_height * 3, sizeof(uint8_t));
-    uint32_t samples_per_pixel = 2;
+    uint32_t samples_per_pixel = 100;
     uint32_t max_depth = 50;
 
     // Camera settings
     vec3 vup = v3_init(0, 1, 0);
-    vec3 look_from = v3_init(-10, 0, 0);
+    vec3 look_from = v3_init(0, 0, 10);
     vec3 look_at = v3_init(0, 0, 0);
     double dist_to_focus = v3_length(v3_sub(look_from, look_at));
     double aperture = 0.05;
@@ -190,7 +189,10 @@ int main(void) {
     /*scene_add_xz_rect(scene, 0, 555, 0, 555, 555, white);*/
 
     /*scene_add_xy_rect(scene, -1, 1, -1, 1, 0, green);*/
-    scene_add_yz_rect(scene, -1, 1, -1, 1, 0, green);
+    /*scene_add_yz_rect(scene, -1, 1, -1, 1, 0, green);*/
+
+    scene_add_sphere(scene, 0, 0, 0, 1, white);
+    scene_add_sphere(scene, 0, -1001, 0, 1000, white);
 
     // Load skybox asset
     skybox = stbi_load("assets/parched_canal_4k.hdr", &sky_width, &sky_height,
