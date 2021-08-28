@@ -3,7 +3,7 @@
 #include "aabb.h"
 #include "hit.h"
 
-enum HittableType { SPHERE, XYRECT, XZRECT, YZRECT};
+enum HittableType { SPHERE };
 typedef enum HittableType HittableType;
 
 typedef struct Hittable Hittable;

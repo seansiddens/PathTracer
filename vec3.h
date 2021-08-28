@@ -54,4 +54,8 @@ vec3 random_in_unit_disk();
 
 bool v3_compare(vec3 a, vec3 b, uint8_t axis);
 
+vec3 v3_min(vec3 u, vec3 v);
+
+vec3 v3_max(vec3 u, vec3 v);
+
 void v3_print(vec3);

@@ -2,7 +2,6 @@
 
 #include "hit.h"
 #include "ray.h"
-#include "texture.h"
 #include "vec3.h"
 
 #include <stdbool.h>

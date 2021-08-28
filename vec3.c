@@ -229,6 +229,22 @@ bool v3_compare(vec3 a, vec3 b, uint8_t axis) {
     }
 }
 
+// Returns new vector containing component-wise minimums of two vectors
+vec3 v3_min(vec3 u, vec3 v) {
+    double x = u.x < v.x ? u.x : v.x;
+    double y = u.y < v.y ? u.x : v.y;
+    double z = u.z < v.z ? u.z : v.z;
+    return v3_init(x, y, z);
+}
+
+// Returns new vector containing component-wise maximums of two vectors
+vec3 v3_max(vec3 u, vec3 v) {
+    double x = u.x > v.x ? u.x : v.x;
+    double y = u.y > v.y ? u.x : v.y;
+    double z = u.z > v.z ? u.z : v.z;
+    return v3_init(x, y, z);
+}
+
 //
 // Prints a given vector.
 //

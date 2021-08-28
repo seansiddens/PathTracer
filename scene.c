@@ -1,6 +1,5 @@
 #include "scene.h"
 #include "aabb.h"
-#include "aarect.h"
 #include "hittable.h"
 #include "material.h"
 #include "sphere.h"
@@ -54,53 +53,13 @@ void scene_add_sphere(Scene *scene, double x, double y, double z, double r,
     Sphere *s = sphere_create(v3_init(x, y, z), r, material);
 
     // Surround w/ hittable so we can insert into our array
-    Hittable *hittable = hittable_create(s, SPHERE);
+    Hittable *hittable = hittable_create((void *)s, SPHERE);
 
     // Insert into the scene
     scene_insert_hittable(scene, hittable);
 }
 
-//
-// Adds an xy-aligned rectangle to the scene.
-//
-void scene_add_xy_rect(Scene *scene, double x0, double x1, double y0, double y1, double z,
-                       Material *material) {
-    XYRect *rect = xy_rect_create(x0, x1, y0, y1, z, material);
 
-    // Surround w/ hittable so we can insert into our array
-    Hittable *hittable = hittable_create(rect, XYRECT);
-
-    // Insert into the scene
-    scene_insert_hittable(scene, hittable);
-}
-
-//
-// Adds an xz-aligned rectangle to the scene.
-//
-void scene_add_xz_rect(Scene *scene, double x0, double x1, double z0, double z1, double y,
-                       Material *material) {
-    XZRect *rect = xz_rect_create(x0, x1, z0, z1, y, material);
-
-    // Surround w/ hittable so we can insert into our array
-    Hittable *hittable = hittable_create(rect, XZRECT);
-
-    // Insert into the scene
-    scene_insert_hittable(scene, hittable);
-}
-
-//
-// Adds an yz-aligned rectangle to the scene.
-//
-void scene_add_yz_rect(Scene *scene, double y0, double y1, double z0, double z1, double x,
-                       Material *material) {
-    YZRect *rect = yz_rect_create(y0, y1, z0, z1, x, material);
-
-    // Surround w/ hittable so we can insert into our array
-    Hittable *hittable = hittable_create(rect, YZRECT);
-
-    // Insert into the scene
-    scene_insert_hittable(scene, hittable);
-}
 
 //
 // Inserts a hittable object into the scene. If the scene hittable array is full,
@@ -190,31 +149,6 @@ Scene *random_scene(void) {
     return scene;
 }
 
-// 
-// Create an initialize a Cornell Box scene
-//
-Scene *cornell_box(void) {
-
-    Scene *scene = (Scene *)malloc(sizeof(Scene));
-    assert(scene != NULL);
-
-    scene->object_count = 0;
-    scene->max_count = 16;
-
-    // Create an initial array to store our objects. Start off w/ a size of 16.
-    scene->objects = (Hittable **)calloc(scene->max_count, sizeof(Hittable *));
-
-    Material *red = create_lambertian(v3_init(0.65, 0.05, 0.05));
-    Material *white = create_lambertian(v3_init(0.73, 0.73, 0.73));
-    Material *green = create_lambertian(v3_init(0.12, 0.45, 0.15));
-    Material *light = create_diffuse_light(v3_init(15, 15, 15));
-
-    scene_add_xz_rect(scene, 213, 343, 227, 332, 554, light);
-    scene_add_xz_rect(scene, 0, 555, 0, 555, 555, red);
-    scene_add_xy_rect(scene, 0, 555, 0, 555, 555, white);
-
-    return scene;
-}
 
 // Print the objects in our scene
 void scene_print(Scene *scene) {
@@ -247,22 +181,13 @@ uint32_t partition(Hittable **objects, int64_t low, int64_t high, uint8_t axis) 
     // Pivot
     AABB pivot;
     switch (objects[high]->type) {
-    case SPHERE:
-        sphere_bounding_box(*((Sphere *)(objects[high]->object)), &pivot);
-        break;
-    case XYRECT:
-        xy_rect_bounding_box(*((XYRect *)(objects[high]->object)), &pivot);
-        break;
-    case XZRECT:
-        xz_rect_bounding_box(*((XZRect *)(objects[high]->object)), &pivot);
-        break;
-    case YZRECT:
-        yz_rect_bounding_box(*((YZRect *)(objects[high]->object)), &pivot);
-        break;
-    default:
-        fprintf(stderr, "ERROR: Unknown object type encountered in partition()!\n");
-        exit(1);
-        break;
+        case SPHERE:
+            sphere_bounding_box(*((Sphere *)(objects[high]->object)), &pivot);
+            break;
+        default:
+            fprintf(stderr, "ERROR: Unknown object type encountered in partition()!\n");
+            exit(1);
+            break;
     }
 
     // Index of smaller element and indicates the right position of pivot found so far
@@ -274,15 +199,6 @@ uint32_t partition(Hittable **objects, int64_t low, int64_t high, uint8_t axis) 
         switch (objects[j]->type) {
         case SPHERE:
             sphere_bounding_box(*((Sphere *)(objects[j]->object)), &element);
-            break;
-        case XYRECT:
-            xy_rect_bounding_box(*((XYRect *)(objects[j]->object)), &element);
-            break;
-        case XZRECT:
-            xz_rect_bounding_box(*((XZRect *)(objects[high]->object)), &pivot);
-            break;
-        case YZRECT:
-            yz_rect_bounding_box(*((YZRect *)(objects[j]->object)), &element);
             break;
         default:
             fprintf(stderr, "ERROR: Unknown object type encountered in partition()!\n");

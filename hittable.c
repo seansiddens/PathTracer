@@ -1,5 +1,4 @@
 #include "hittable.h"
-#include "aarect.h"
 #include "sphere.h"
 
 #include <assert.h>
@@ -40,15 +39,6 @@ bool hittable_intersect(Hittable h, ray r, double t_min, double t_max, HitRecord
     case SPHERE:
         hit = sphere_intersect(*((Sphere *)(h.object)), r, t_min, t_max, rec);
         break;
-    case XYRECT:
-        hit = xy_rect_intersect(*((XYRect *)(h.object)), r, t_min, t_max, rec);
-        break;
-    case XZRECT:
-        hit = xz_rect_intersect(*((XZRect *)(h.object)), r, t_min, t_max, rec);
-        break;
-    case YZRECT:
-        hit = yz_rect_intersect(*((YZRect *)(h.object)), r, t_min, t_max, rec);
-        break;
     default:
         fprintf(stderr,
                 "ERROR: Unknown object type encountered in hittable_intersect()!\n");
@@ -65,23 +55,14 @@ bool hittable_intersect(Hittable h, ray r, double t_min, double t_max, HitRecord
 //
 bool hittable_bounding_box(Hittable h, AABB *output_box) {
     switch (h.type) {
-    case SPHERE:
-        return sphere_bounding_box(*((Sphere *)(h.object)), output_box);
-        break;
-    case XYRECT:
-        return xy_rect_bounding_box(*((XYRect *)(h.object)), output_box);
-        break;
-    case XZRECT:
-        return xz_rect_bounding_box(*((XZRect *)(h.object)), output_box);
-        break;
-    case YZRECT:
-        return yz_rect_bounding_box(*((YZRect *)(h.object)), output_box);
-        break;
-    default:
-        fprintf(stderr,
-                "ERROR: Invalid hittable type encountered in hittable_bounding_box()\n");
-        exit(1);
-        break;
+        case SPHERE:
+            return sphere_bounding_box(*((Sphere *)(h.object)), output_box);
+            break;
+        default:
+            fprintf(stderr,
+                    "ERROR: Invalid hittable type encountered in hittable_bounding_box()\n");
+            exit(1);
+            break;
     }
 }
 
@@ -93,12 +74,6 @@ void hittable_print(Hittable *h) {
         switch (h->type) {
         case SPHERE:
             sphere_print((Sphere *)h->object);
-            break;
-        case XYRECT:
-            xy_rect_print((XYRect *)h->object);
-            break;
-        case XZRECT:
-            xz_rect_print((XZRect *)h->object);
             break;
         default:
             fprintf(stderr,

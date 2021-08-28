@@ -8,18 +8,20 @@
 
 #include <stdbool.h>
 
+typedef struct Sphere Sphere;
+
 // Struct definition for a hittable sphere object
-typedef struct {
+struct Sphere {
     vec3 center;
     double radius;
     Material *material;
-} Sphere;
+};
 
 Sphere *sphere_create(vec3 center, double radius, Material *);
 
 void sphere_delete(Sphere **);
 
-bool sphere_intersect(Sphere, ray, double, double, HitRecord *);
+bool sphere_intersect(Sphere s, ray r, double t_min, double t_max, HitRecord *rec);
 
 bool sphere_bounding_box(Sphere s, AABB *output_box);
 

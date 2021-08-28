@@ -8,9 +8,9 @@
 // Returns the gamma corrected version of the color
 //
 color gamma_correct(color col, double gamma) {
-    col.x = pow(col.x, gamma);
-    col.y = pow(col.y, gamma);
-    col.z = pow(col.z, gamma);
+    col.x = pow(col.x, 1.0 / gamma);
+    col.y = pow(col.y, 1.0 / gamma);
+    col.z = pow(col.z, 1.0 / gamma);
 
     return col;
 }
@@ -89,16 +89,17 @@ void write_color(uint8_t *image, color pixel_color, uint32_t i,
     // gamma-correct.
     double scale = 1.0 / (double)samples_per_pixel;
     pixel_color = v3_scale(pixel_color, scale);
+    pixel_color = gamma_correct(pixel_color,  2.2);
 
     // apply exposure
     double const exposure = 1.0;
     pixel_color = v3_scale(pixel_color, exposure);
 
     // convert unbounded HDR color range to SDR color range
-    pixel_color = ACES_film(pixel_color);
+    /*pixel_color = ACES_film(pixel_color);*/
 
     // Convert from linear to sRGB for display
-    pixel_color = linear_to_SRGB(pixel_color);
+    /*pixel_color = linear_to_SRGB(pixel_color);*/
 
     // Set value of color channels at the pixel
     image[i] = (uint8_t)(255 * clamp(pixel_color.x, 0.0, 1.0));
