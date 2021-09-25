@@ -12,7 +12,7 @@ A simple path tracer  written in C. Code is adpated from Peter Shirley's
 - Currently only renders spheres
 
 # Building
-Clone the repository and type `make run` to build the program.
+Clone the repository and type `make` to build.
 
 # Images
 ![diffuse_gamma](https://user-images.githubusercontent.com/11508260/134719755-4f76b461-0f91-4001-a488-cda6681e7f22.png)
