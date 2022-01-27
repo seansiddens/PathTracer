@@ -43,6 +43,8 @@ typedef struct {
     uint32_t thread_id;
 } RenderArgs;
 
+
+
 //
 // Given a unit vector, return a color.
 //
